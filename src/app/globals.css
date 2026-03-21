@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* ===== Rafaela Finance — Sistema de Design ===== */
+
+  /* Marca — vinho */
+  --wine:        #5B2D45;
+  --wine-mid:    #7A3D5C;
+  --wine-light:  #9A5070;
+
+  /* Acento — malva e blush */
+  --mauve:       #B5747D;
+  --blush:       #D8B8B0;
+  --blush-light: #EDD8D3;
+
+  /* Semântico — pendente (âmbar) */
+  --amber:       #C4752A;
+  --amber-light: #D98A3C;
+
+  /* Semântico — recebido (sálvia) */
+  --forest:      #5A7A5C;
+  --forest-light: #7A9E7C;
+
+  /* Semântico — atrasado (rosa-vinho) */
+  --overdue:     #9B1D3E;
+  --overdue-mid: #C0405E;
+
+  /* Superfícies — base creme */
+  --surface-base:  #F7EFE9;
+  --surface-card:  #FDFAF8;
+  --surface-input: #F2E8E3;
+
+  /* Compatibilidade (componentes usam --teal, --ivory) */
+  --teal:        #5B2D45;
+  --teal-mid:    #7A3D5C;
+  --teal-light:  #9A5070;
+  --ivory:       #EFE3DC;
+  --ivory-mid:   #E6D5CB;
+  --ivory-dark:  #D4BDB2;
+
+  /* Texto — quentes, derivados do vinho */
+  --ink:         #26101C;
+  --ink-mid:     #5C3749;
+  --ink-light:   #8B6575;
+  --ink-faint:   #B8909F;
+
+  /* Bordas — rgba derivado do vinho */
+  --border:        rgba(91, 45, 69, 0.12);
+  --border-mid:    rgba(91, 45, 69, 0.22);
+  --border-strong: rgba(91, 45, 69, 0.40);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--surface-base);
+    color: var(--ink);
+    font-family: var(--font-sans), 'Jost', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  /* Inputs não fazem zoom no iOS */
+  input, select, textarea {
+    font-size: 16px;
+    font-family: var(--font-sans), 'Jost', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  /* Campo de formulário padrão */
+  .field {
+    @apply w-full rounded-lg border px-4 py-3 text-base outline-none transition-colors;
+    background-color: var(--surface-input);
+    color: var(--ink);
+    border-color: var(--border-mid);
+    min-height: 48px;
+  }
+  .field::placeholder {
+    color: var(--ink-faint);
+  }
+  .field:focus {
+    border-color: var(--wine-light);
+    box-shadow: 0 0 0 3px rgba(154, 80, 112, 0.15);
+    outline: none;
+  }
+
+  /* Label de formulário */
+  .field-label {
+    @apply block text-sm font-medium mb-1.5;
+    color: var(--ink-mid);
+  }
+
+  /* Botão primário */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base
+           font-medium text-white transition-colors min-h-[48px]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    background-color: var(--wine);
+    font-family: var(--font-sans), 'Jost', sans-serif;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--wine-mid);
+  }
+  .btn-primary:active:not(:disabled) {
+    background-color: var(--wine);
+  }
+
+  /* Botão secundário */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base
+           font-medium transition-colors min-h-[48px]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    color: var(--ink-mid);
+    border: 1px solid var(--border-mid);
+    background-color: var(--surface-card);
+    font-family: var(--font-sans), 'Jost', sans-serif;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--ivory-mid);
+  }
+
+  /* Card */
+  .card {
+    @apply rounded-xl p-6;
+    background-color: var(--surface-card);
+    border: 1px solid var(--border);
+  }
+
+  /* Badge — pendente */
+  .badge-pending {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    background-color: #FEE9CC;
+    color: #8A500A;
+  }
+
+  /* Badge — recebido */
+  .badge-received {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    background-color: #E0EDE2;
+    color: #3D5E3F;
+  }
+
+  /* Badge — atrasado */
+  .badge-overdue {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+    background-color: #F8E5EB;
+    color: #9B1D3E;
+  }
+
+  /* Título de seção com tipografia de exibição */
+  .section-title {
+    font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+}
