@@ -19,6 +19,9 @@ const jost = Jost({
 export const metadata: Metadata = {
   title: 'MedUp',
   description: 'Controle financeiro médico',
+  verification: {
+    google: 'googlee51b67f276fae29d',
+  },
 }
 
 export const viewport: Viewport = {
