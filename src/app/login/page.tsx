@@ -376,13 +376,19 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Rodapé Post Up */}
-        <p className="text-center text-xs" style={{ color: 'var(--ink-faint)' }}>
-          by{' '}
-          <span className="font-medium" style={{ color: 'var(--ink-light)' }}>
-            Post Up — Ads &amp; Social
-          </span>
-        </p>
+        {/* Rodapé Post Up e Links Legais */}
+        <div className="flex flex-col items-center gap-2 mt-4 text-xs" style={{ color: 'var(--ink-faint)' }}>
+          <p>
+            by{' '}
+            <span className="font-medium" style={{ color: 'var(--ink-light)' }}>
+              Post Up — Ads &amp; Social
+            </span>
+          </p>
+          <div className="flex gap-4">
+            <a href="/privacidade" className="hover:underline" style={{ color: 'var(--ink-light)' }}>Política de Privacidade</a>
+            <a href="/termos" className="hover:underline" style={{ color: 'var(--ink-light)' }}>Termos de Serviço</a>
+          </div>
+        </div>
 
       </div>
     </div>

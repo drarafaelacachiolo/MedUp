@@ -4,13 +4,15 @@ import { updateSession } from '@/lib/supabase/middleware'
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request)
 
-  const isLoginPage = request.nextUrl.pathname === '/login'
+  const isPublicRoute = ['/login', '/privacidade', '/termos', '/auth/callback'].includes(request.nextUrl.pathname)
 
-  if (!user && !isLoginPage) {
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
+
+  const isLoginPage = request.nextUrl.pathname === '/login'
 
   if (user && isLoginPage) {
     const url = request.nextUrl.clone()
