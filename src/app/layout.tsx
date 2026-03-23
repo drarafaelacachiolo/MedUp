@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: 'MedUp',
   description: 'Controle financeiro médico',
   verification: {
-    google: 'googlee51b67f276fae29d',
+    google: 'UqZ4mfXVFIcSzuO2eBGYg6hz0VJ1hh5fn4ffB2GnaNI',
   },
 }
 
