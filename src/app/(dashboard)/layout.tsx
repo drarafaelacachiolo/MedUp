@@ -38,7 +38,7 @@ export default async function DashboardLayout({
               letterSpacing: '-0.01em',
             }}
           >
-            Rafa Finance
+            MedUp
           </span>
         </div>
 

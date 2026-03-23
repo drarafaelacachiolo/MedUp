@@ -17,7 +17,7 @@ const jost = Jost({
 })
 
 export const metadata: Metadata = {
-  title: 'Rafa Finance',
+  title: 'MedUp',
   description: 'Controle financeiro médico',
 }
 
