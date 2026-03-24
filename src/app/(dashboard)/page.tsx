@@ -4,6 +4,7 @@ import HallView from '@/components/HallView'
 import NovoLancamentoForm from '@/components/novo-lancamento/NovoLancamentoForm'
 import DashboardView from '@/components/dashboard/DashboardView'
 import CalendarView from '@/components/calendar/CalendarView'
+import LogoutButton from './LogoutButton'
 
 function LoadingSkeleton() {
   return (
@@ -54,9 +55,24 @@ export default async function HomePage({
       )}
 
       {(tab === 'ajustes' || tab === 'perfil') && (
-        <div className="p-6 sm:p-8">
-          <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
-            Em breve.
+        <div className="p-6 sm:p-8 flex flex-col items-center text-center">
+          <div className="w-20 h-20 rounded-full bg-[#1C4E80] flex items-center justify-center mb-4 shadow-sm">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold" style={{ color: '#1A1816' }}>{userName}</h2>
+          <p className="text-sm mb-8" style={{ color: '#7A756E' }}>Acesse suas configurações e conta</p>
+
+          <div className="w-full max-w-sm space-y-3">
+            <div className="p-4 rounded-xl border flex items-center justify-between" style={{ borderColor: '#E5E1DB', backgroundColor: '#FFFFFF' }}>
+              <span className="text-sm font-medium">Sair da conta</span>
+              <LogoutButton />
+            </div>
+          </div>
+
+          <p className="text-xs mt-10" style={{ color: 'hsl(var(--muted-foreground))' }}>
+            MedUp v1.0.0
           </p>
         </div>
       )}

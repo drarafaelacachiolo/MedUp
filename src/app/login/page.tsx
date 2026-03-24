@@ -72,7 +72,7 @@ export default function LoginPage() {
     setCadastroLoading(true)
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: cadastroEmail,
       password: cadastroPassword,
       options: {
@@ -85,6 +85,12 @@ export default function LoginPage() {
         ? 'Este email já está cadastrado.'
         : 'Erro ao criar conta. Tente novamente.')
       setCadastroLoading(false)
+      return
+    }
+
+    if (data.session) {
+      router.refresh()
+      router.push('/')
       return
     }
 
@@ -257,7 +263,7 @@ export default function LoginPage() {
                       Conta criada com sucesso!
                     </p>
                     <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                      Verifique seu email para confirmar o cadastro e então faça login.
+                      Sua conta já está pronta para uso. Agora é só entrar!
                     </p>
                     <button
                       onClick={() => { setCadastroSuccess(false); setTab('login') }}

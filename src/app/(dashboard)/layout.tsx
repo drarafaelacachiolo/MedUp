@@ -31,13 +31,14 @@ export default async function DashboardLayout({
           <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: 700, color: '#1C4E80', letterSpacing: '-0.3px' }}>
             MedUp
           </span>
-          <div
+          <a
+            href="/?tab=perfil"
             style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#1C4E80', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
             </svg>
-          </div>
+          </a>
         </header>
 
         {/* Conteúdo */}

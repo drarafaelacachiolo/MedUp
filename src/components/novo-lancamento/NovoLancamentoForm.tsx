@@ -153,69 +153,73 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-xl mx-auto">
-      <h2 className="section-title mb-5">Novo Lançamento</h2>
+    <div className="p-4 sm:p-6 lg:p-10 max-w-4xl mx-auto">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold" style={{ color: '#1A1816', letterSpacing: '-0.5px' }}>Novo Lançamento</h2>
+        <p className="text-sm" style={{ color: '#7A756E' }}>Preencha os dados abaixo para registrar seu atendimento.</p>
+      </div>
 
       {success && (
         <div
-          className="flex items-center gap-2 rounded-lg px-4 py-3 mb-5 text-sm font-medium"
-          style={{ backgroundColor: '#d1fae5', color: '#047857' }}
+          className="flex items-center gap-2 rounded-xl px-4 py-3 mb-8 text-sm font-medium border animate-in fade-in slide-in-from-top-4"
+          style={{ backgroundColor: '#EEFBF4', color: '#065F46', borderColor: '#D1FAE5' }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
           Atendimento lançado com sucesso!
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="field-label">Data do Atendimento *</label>
-          <input
-            type="date"
-            required
-            className="field"
-            value={form.data_atendimento}
-            onChange={(e) => set('data_atendimento', e.target.value)}
-          />
-        </div>
-
-        <div>
-          <label className="field-label">Tipo de Atendimento *</label>
-          {loadingCategorias ? (
-            <div className="field flex items-center" style={{ color: 'hsl(var(--muted-foreground))' }}>
-              <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-              </svg>
-              Carregando...
-            </div>
-          ) : (
-            <select
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Seção 1: Informações Gerais */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+          <div>
+            <label className="field-label">Data do Atendimento *</label>
+            <input
+              type="date"
               required
               className="field"
-              value={form.categoriaId}
-              onChange={(e) => handleSelectCategoria(e.target.value)}
-            >
-              <option value="">Selecione...</option>
-              {categorias.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.nome}
-                </option>
-              ))}
-            </select>
-          )}
+              value={form.data_atendimento}
+              onChange={(e) => set('data_atendimento', e.target.value)}
+            />
+          </div>
 
-          <div className="mt-2">
+          <div>
+            <label className="field-label">Tipo de Atendimento *</label>
+            {loadingCategorias ? (
+              <div className="field flex items-center" style={{ color: 'hsl(var(--muted-foreground))' }}>
+                <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+                Carregando...
+              </div>
+            ) : (
+              <select
+                required
+                className="field"
+                value={form.categoriaId}
+                onChange={(e) => handleSelectCategoria(e.target.value)}
+              >
+                <option value="">Selecione...</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nome}
+                  </option>
+                ))}
+              </select>
+            )}
+
             <button
               type="button"
               onClick={() => setShowNovaCategoria((v) => !v)}
-              className="flex items-center gap-1.5 text-xs font-medium transition-colors"
-              style={{ color: 'hsl(var(--ring))' }}
+              className="mt-2 flex items-center gap-1.5 text-xs font-semibold transition-colors"
+              style={{ color: '#1C4E80' }}
             >
               <svg
                 width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
                 style={{ transform: showNovaCategoria ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s' }}
               >
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -225,19 +229,17 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
 
             {showNovaCategoria && (
               <div
-                className="mt-3 rounded-xl p-4 space-y-3"
-                style={{ backgroundColor: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))' }}
+                className="mt-3 rounded-xl p-4 space-y-4 shadow-sm animate-in zoom-in-95"
+                style={{ backgroundColor: '#F9F8F6', border: '1px solid #E5E1DB' }}
               >
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                  Criar nova categoria
-                </p>
-
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#7A756E]">Nova Categoria</p>
+                
                 <div>
-                  <label className="field-label">Nome *</label>
+                  <label className="field-label !text-xs">Nome *</label>
                   <input
                     type="text"
-                    className="field"
-                    placeholder='ex: "Plantão 24h", "Consulta retorno"'
+                    className="field !h-10 !py-1"
+                    placeholder='ex: "Plantão 24h"'
                     value={novaCategoria.nome}
                     onChange={(e) => setNovaCategoria((p) => ({ ...p, nome: e.target.value }))}
                   />
@@ -245,9 +247,9 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="field-label">Tipo *</label>
+                    <label className="field-label !text-xs">Tipo *</label>
                     <select
-                      className="field"
+                      className="field !h-10 !py-1"
                       value={novaCategoria.tipo}
                       onChange={(e) => setNovaCategoria((p) => ({ ...p, tipo: e.target.value as TipoAtendimento }))}
                     >
@@ -256,11 +258,11 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
                     </select>
                   </div>
                   <div>
-                    <label className="field-label">Tempo *</label>
+                    <label className="field-label !text-xs">Tempo *</label>
                     <input
                       type="text"
-                      className="field"
-                      placeholder="ex: 24h, 2h"
+                      className="field !h-10 !py-1"
+                      placeholder="ex: 12h"
                       value={novaCategoria.tempo}
                       onChange={(e) => setNovaCategoria((p) => ({ ...p, tempo: e.target.value }))}
                     />
@@ -271,53 +273,58 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
                   type="button"
                   onClick={handleCriarCategoria}
                   disabled={savingCategoria || !novaCategoria.nome.trim() || !novaCategoria.tempo.trim()}
-                  className="btn-primary text-sm px-4 py-2"
-                  style={{ minHeight: '40px', fontSize: '13px' }}
+                  className="btn-primary w-full !min-h-0 py-2 text-xs"
                 >
                   {savingCategoria ? 'Criando...' : 'Criar e selecionar'}
                 </button>
               </div>
             )}
           </div>
+
+          <div className="md:col-span-2">
+            <label className="field-label">Local *</label>
+            <input
+              type="text"
+              required
+              className="field"
+              placeholder="Ex: Hospital das Clínicas, Unifesp..."
+              value={form.local}
+              onChange={(e) => set('local', e.target.value)}
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="field-label">Paciente / Identificação</label>
+            <input
+              type="text"
+              className="field"
+              placeholder="Nome do paciente ou identificação extra"
+              value={form.paciente}
+              onChange={(e) => set('paciente', e.target.value)}
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="field-label">Local *</label>
-          <input
-            type="text"
-            required
-            className="field"
-            placeholder="Hospital / Clínica"
-            value={form.local}
-            onChange={(e) => set('local', e.target.value)}
-          />
-        </div>
+        <hr style={{ borderColor: '#E5E1DB' }} />
 
-        <div>
-          <label className="field-label">Paciente / Identificação</label>
-          <input
-            type="text"
-            className="field"
-            placeholder="Nome do paciente ou identificação do plantão"
-            value={form.paciente}
-            onChange={(e) => set('paciente', e.target.value)}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Seção 2: Financeiro */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
           <div>
             <label className="field-label">Valor a Receber (R$) *</label>
-            <input
-              type="number"
-              required
-              step="0.01"
-              min="0"
-              inputMode="decimal"
-              className="field"
-              placeholder="0,00"
-              value={form.valor_a_receber}
-              onChange={(e) => set('valor_a_receber', e.target.value)}
-            />
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#7A756E] font-semibold">R$</span>
+              <input
+                type="number"
+                required
+                step="0.01"
+                min="0"
+                inputMode="decimal"
+                className="field pl-11"
+                placeholder="0,00"
+                value={form.valor_a_receber}
+                onChange={(e) => set('valor_a_receber', e.target.value)}
+              />
+            </div>
           </div>
           <div>
             <label className="field-label">Previsão de Pagamento *</label>
@@ -329,31 +336,30 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
               onChange={(e) => set('data_prevista_pagamento', e.target.value)}
             />
           </div>
+          
+          <div className="md:col-span-2">
+            <label className="field-label">Observações</label>
+            <textarea
+              className="field min-h-[100px]"
+              rows={3}
+              placeholder="Notas financeiras ou detalhes do plantão..."
+              value={form.observacoes}
+              onChange={(e) => set('observacoes', e.target.value)}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
         </div>
 
-        <div>
-          <label className="field-label">Observações</label>
-          <textarea
-            className="field"
-            rows={2}
-            placeholder="Anotações adicionais..."
-            value={form.observacoes}
-            onChange={(e) => set('observacoes', e.target.value)}
-            style={{ resize: 'vertical' }}
-          />
-        </div>
+        {/* Seção 3: Recebimento (Optional) */}
+        <div className="rounded-2xl p-6 space-y-5" style={{ backgroundColor: '#F9F8F6', border: '1px solid #E5E1DB' }}>
+          <div className="flex items-center gap-2 mb-2">
+             <div className="w-2 h-2 rounded-full bg-[#1C4E80]"></div>
+             <p className="text-xs font-bold uppercase tracking-widest text-[#1C4E80]">Recebimento — opcional</p>
+          </div>
 
-        <div
-          className="rounded-xl p-4 space-y-4 mt-2"
-          style={{ backgroundColor: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))' }}
-        >
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'hsl(var(--muted-foreground))' }}>
-            Recebimento — opcional
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
             <div>
-              <label className="field-label">Data que Recebeu</label>
+              <label className="field-label">Data do Recebimento</label>
               <input
                 type="date"
                 className="field"
@@ -363,54 +369,58 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
             </div>
             <div>
               <label className="field-label">Valor Recebido (R$)</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-[#7A756E] font-semibold">R$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  inputMode="decimal"
+                  className="field pl-11"
+                  placeholder="0,00"
+                  value={form.valor_recebido}
+                  onChange={(e) => set('valor_recebido', e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="md:col-span-2">
+              <label className="field-label">Banco</label>
               <input
-                type="number"
-                step="0.01"
-                min="0"
-                inputMode="decimal"
+                type="text"
                 className="field"
-                placeholder="0,00"
-                value={form.valor_recebido}
-                onChange={(e) => set('valor_recebido', e.target.value)}
+                placeholder="Ex: Itaú, Santander, Nubank..."
+                value={form.banco}
+                onChange={(e) => set('banco', e.target.value)}
               />
             </div>
-          </div>
-
-          <div>
-            <label className="field-label">Banco</label>
-            <input
-              type="text"
-              className="field"
-              placeholder="ex: Bradesco, Nubank, Itaú"
-              value={form.banco}
-              onChange={(e) => set('banco', e.target.value)}
-            />
           </div>
         </div>
 
         {error && (
-          <p className="text-sm rounded-lg px-3 py-2" style={{ color: '#b91c1c', backgroundColor: '#fee2e2' }}>
+          <div className="p-3 rounded-lg text-sm font-medium border" style={{ color: '#991B1B', backgroundColor: '#FEF2F2', borderColor: '#FEE2E2' }}>
             {error}
-          </p>
+          </div>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn-primary w-full"
-        >
-          {loading ? (
-            <>
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-              </svg>
-              Salvando...
-            </>
-          ) : (
-            'Salvar Lançamento'
-          )}
-        </button>
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full h-14 text-base shadow-md disabled:shadow-none"
+          >
+            {loading ? (
+              <>
+                <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+                </svg>
+                Processando...
+              </>
+            ) : (
+              'Salvar Lançamento'
+            )}
+          </button>
+        </div>
       </form>
     </div>
   )
