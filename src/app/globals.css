@@ -201,6 +201,18 @@
     color: #FFFFFF;
   }
 
+  /* Painel escuro do login — transparente no mobile, navy no desktop */
+  .login-dark-panel {
+    background: transparent;
+  }
+
+  @media (min-width: 1024px) {
+    .login-dark-panel {
+      background: radial-gradient(ellipse at 70% 45%, #1a3070 0%, #0a1435 50%, #04080f 100%);
+      justify-content: center;
+    }
+  }
+
   /* Título de seção */
   .section-title {
     font-size: 1.25rem;

@@ -6,6 +6,65 @@ import { createClient } from '@/lib/supabase/client'
 
 type Tab = 'login' | 'cadastro'
 
+const NAVY = '#0D1B3E'
+const BLUE = '#1C4E80'
+
+function MedUpLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+  const scale = size === 'sm' ? 0.6 : size === 'lg' ? 1.2 : 1
+  const w = Math.round(220 * scale)
+  return (
+    <img
+      src="/logo.png"
+      alt="MedUp"
+      width={w}
+      style={{ maxWidth: '100%' }}
+    />
+  )
+}
+
+function Spinner() {
+  return (
+    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+    </svg>
+  )
+}
+
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+    </svg>
+  )
+}
+
+function Footer({ dark }: { dark?: boolean }) {
+  const muted = dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF'
+  const link = dark ? 'rgba(255,255,255,0.6)' : '#6B7280'
+  return (
+    <div style={{ textAlign: 'center', fontSize: 12 }}>
+      <p style={{ color: muted, marginBottom: 4 }}>
+        by{' '}
+        <span style={{ color: dark ? 'rgba(255,255,255,0.7)' : '#374151', fontWeight: 500 }}>
+          Post Up — Ads &amp; Social
+        </span>
+      </p>
+      <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+        <a href="/privacidade" style={{ color: link, textDecoration: 'none' }}>
+          Política de Privacidade
+        </a>
+        <a href="/termos" style={{ color: link, textDecoration: 'none' }}>
+          Termos de Serviço
+        </a>
+      </div>
+    </div>
+  )
+}
+
 export default function LoginPage() {
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('login')
@@ -17,10 +76,15 @@ export default function LoginPage() {
   const [loginLoading, setLoginLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
 
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
+  const [showCadastroPassword, setShowCadastroPassword] = useState(false)
+  const [showCadastroConfirm, setShowCadastroConfirm] = useState(false)
+
   // Cadastro
   const [cadastroNome, setCadastroNome] = useState('')
   const [cadastroEmail, setCadastroEmail] = useState('')
   const [cadastroPassword, setCadastroPassword] = useState('')
+  const [cadastroConfirm, setCadastroConfirm] = useState('')
   const [cadastroError, setCadastroError] = useState('')
   const [cadastroSuccess, setCadastroSuccess] = useState(false)
   const [cadastroLoading, setCadastroLoading] = useState(false)
@@ -29,19 +93,16 @@ export default function LoginPage() {
     e.preventDefault()
     setLoginError('')
     setLoginLoading(true)
-
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({
       email: loginEmail,
       password: loginPassword,
     })
-
     if (error) {
       setLoginError('Email ou senha incorretos.')
       setLoginLoading(false)
       return
     }
-
     router.refresh()
     router.push('/')
   }
@@ -50,15 +111,11 @@ export default function LoginPage() {
     setLoginError('')
     setCadastroError('')
     setGoogleLoading(true)
-
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
-
     if (error) {
       setLoginError('Erro ao conectar com Google.')
       setCadastroError('Erro ao conectar com Google.')
@@ -69,333 +126,375 @@ export default function LoginPage() {
   async function handleCadastro(e: React.FormEvent) {
     e.preventDefault()
     setCadastroError('')
+    if (cadastroPassword !== cadastroConfirm) {
+      setCadastroError('As senhas não coincidem.')
+      setCadastroLoading(false)
+      return
+    }
     setCadastroLoading(true)
-
     const supabase = createClient()
     const { data, error } = await supabase.auth.signUp({
       email: cadastroEmail,
       password: cadastroPassword,
-      options: {
-        data: { full_name: cadastroNome },
-      },
+      options: { data: { full_name: cadastroNome } },
     })
-
     if (error) {
-      setCadastroError(error.message === 'User already registered'
-        ? 'Este email já está cadastrado.'
-        : 'Erro ao criar conta. Tente novamente.')
+      setCadastroError(
+        error.message === 'User already registered'
+          ? 'Este email já está cadastrado.'
+          : 'Erro ao criar conta. Tente novamente.'
+      )
       setCadastroLoading(false)
       return
     }
-
     if (data.session) {
       router.refresh()
       router.push('/')
       return
     }
-
     setCadastroSuccess(true)
     setCadastroLoading(false)
   }
 
-  return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ backgroundColor: 'hsl(var(--background))' }}
-    >
-      <div className="w-full max-w-sm flex flex-col gap-6">
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    borderRadius: 8,
+    border: '1px solid #E5E1DB',
+    backgroundColor: '#F5F5F4',
+    padding: '10px 14px',
+    fontSize: 15,
+    color: NAVY,
+    outline: 'none',
+    minHeight: 44,
+    boxSizing: 'border-box',
+  }
 
-        {/* Logo */}
-        <div className="text-center">
-          <div
-            className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4"
-            style={{ backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontSize: 13,
+    fontWeight: 500,
+    color: NAVY,
+    marginBottom: 6,
+  }
+
+  const btnPrimary: React.CSSProperties = {
+    width: '100%',
+    backgroundColor: BLUE,
+    color: '#FFFFFF',
+    border: 'none',
+    borderRadius: 8,
+    padding: '13px 20px',
+    fontSize: 15,
+    fontWeight: 600,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    minHeight: 48,
+  }
+
+  const btnGoogle: React.CSSProperties = {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    color: NAVY,
+    border: '1px solid #E5E1DB',
+    borderRadius: 8,
+    padding: '11px 20px',
+    fontSize: 15,
+    fontWeight: 500,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    minHeight: 44,
+  }
+
+  const errorBox = (msg: string) => (
+    <p style={{
+      fontSize: 13,
+      color: '#b91c1c',
+      backgroundColor: '#fee2e2',
+      borderRadius: 6,
+      padding: '8px 12px',
+    }}>
+      {msg}
+    </p>
+  )
+
+  const dividerStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    margin: '4px 0',
+  }
+
+  function LoginForm() {
+    return (
+      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div>
+          <label style={labelStyle}>Email</label>
+          <input
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="seu@email.com"
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+            style={inputStyle}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Senha</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showLoginPassword ? 'text' : 'password'}
+              autoComplete="current-password"
+              required
+              placeholder="••••••••"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+              style={{ ...inputStyle, paddingRight: 44 }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowLoginPassword(v => !v)}
+              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 0, display: 'flex' }}
+            >
+              {showLoginPassword
+                ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              }
+            </button>
+          </div>
+        </div>
+        {loginError && errorBox(loginError)}
+        <button type="submit" disabled={loginLoading} style={{ ...btnPrimary, opacity: loginLoading ? 0.6 : 1 }}>
+          {loginLoading ? <><Spinner /> Entrando...</> : 'Entrar'}
+        </button>
+        <div style={dividerStyle}>
+          <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
+          <span style={{ fontSize: 12, color: '#9CA3AF', whiteSpace: 'nowrap' }}>ou continue com</span>
+          <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
+        </div>
+        <button type="button" onClick={handleGoogleLogin} disabled={googleLoading} style={{ ...btnGoogle, opacity: googleLoading ? 0.6 : 1 }}>
+          {googleLoading ? <Spinner /> : <GoogleIcon />}
+          Google
+        </button>
+      </form>
+    )
+  }
+
+  function CadastroForm() {
+    if (cadastroSuccess) {
+      return (
+        <div style={{ textAlign: 'center', padding: '16px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: '#E6F4ED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3D5E3F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <h1
-            className="text-4xl font-semibold tracking-tight"
+          <p style={{ fontWeight: 500, color: NAVY, fontSize: 15 }}>Conta criada com sucesso!</p>
+          <p style={{ fontSize: 13, color: '#6B7280', lineHeight: '1.5' }}>
+            Enviamos um e-mail de confirmação para <strong>{cadastroEmail}</strong>. Acesse sua caixa de entrada e clique no link para ativar sua conta.
+          </p>
+          <button
+            onClick={() => { setCadastroSuccess(false); setTab('login') }}
+            style={{ fontSize: 14, fontWeight: 500, color: BLUE, background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            Ir para o login →
+          </button>
+        </div>
+      )
+    }
+    return (
+      <form onSubmit={handleCadastro} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div>
+          <label style={labelStyle}>Nome completo</label>
+          <input
+            type="text"
+            autoComplete="name"
+            required
+            placeholder="Dra. Ana Silva"
+            value={cadastroNome}
+            onChange={(e) => setCadastroNome(e.target.value)}
+            style={inputStyle}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Email</label>
+          <input
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="seu@email.com"
+            value={cadastroEmail}
+            onChange={(e) => setCadastroEmail(e.target.value)}
+            style={inputStyle}
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>Senha</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showCadastroPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              required
+              minLength={6}
+              placeholder="Mínimo 6 caracteres"
+              value={cadastroPassword}
+              onChange={(e) => setCadastroPassword(e.target.value)}
+              style={{ ...inputStyle, paddingRight: 44 }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowCadastroPassword(v => !v)}
+              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 0, display: 'flex' }}
+            >
+              {showCadastroPassword
+                ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              }
+            </button>
+          </div>
+        </div>
+        <div>
+          <label style={labelStyle}>Confirmar senha</label>
+          <div style={{ position: 'relative' }}>
+            <input
+              type={showCadastroConfirm ? 'text' : 'password'}
+              autoComplete="new-password"
+              required
+              placeholder="Repita a senha"
+              value={cadastroConfirm}
+              onChange={(e) => setCadastroConfirm(e.target.value)}
+              style={{ ...inputStyle, paddingRight: 44 }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowCadastroConfirm(v => !v)}
+              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 0, display: 'flex' }}
+            >
+              {showCadastroConfirm
+                ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              }
+            </button>
+          </div>
+        </div>
+        {cadastroError && errorBox(cadastroError)}
+        <button type="submit" disabled={cadastroLoading} style={{ ...btnPrimary, opacity: cadastroLoading ? 0.6 : 1 }}>
+          {cadastroLoading ? <><Spinner /> Criando conta...</> : 'Criar conta'}
+        </button>
+        <div style={dividerStyle}>
+          <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
+          <span style={{ fontSize: 12, color: '#9CA3AF', whiteSpace: 'nowrap' }}>ou continue com</span>
+          <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
+        </div>
+        <button type="button" onClick={handleGoogleLogin} disabled={googleLoading} style={{ ...btnGoogle, opacity: googleLoading ? 0.6 : 1 }}>
+          {googleLoading ? <Spinner /> : <GoogleIcon />}
+          Google
+        </button>
+      </form>
+    )
+  }
+
+  const card = (
+    <div style={{
+      backgroundColor: '#FFFFFF',
+      borderRadius: 16,
+      width: '100%',
+      maxWidth: 380,
+      overflow: 'hidden',
+      boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
+    }}>
+      {/* Tabs */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        borderBottom: '1px solid #E5E1DB',
+      }}>
+        {(['login', 'cadastro'] as Tab[]).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
             style={{
-              fontFamily: 'var(--font-serif)',
-              color: 'hsl(var(--primary))',
-              letterSpacing: '-0.02em',
+              padding: '14px',
+              fontSize: 14,
+              fontWeight: 500,
+              color: tab === t ? BLUE : '#9CA3AF',
+              backgroundColor: 'transparent',
+              border: 'none',
+              borderBottom: tab === t ? `2px solid ${BLUE}` : '2px solid transparent',
+              cursor: 'pointer',
+              marginBottom: -1,
             }}
           >
-            MedUp
-          </h1>
-          <p className="text-sm mt-1" style={{ color: 'hsl(var(--muted-foreground))' }}>
-            Controle financeiro para médicos
-          </p>
+            {t === 'login' ? 'Entrar' : 'Criar conta'}
+          </button>
+        ))}
+      </div>
+
+      {/* Form */}
+      <div style={{ padding: 24 }}>
+        {tab === 'login' ? LoginForm() : CadastroForm()}
+      </div>
+    </div>
+  )
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', backgroundColor: '#F7F6F3' }}>
+
+      {/* ── Left panel (desktop only) ── */}
+      <div className="hidden lg:flex" style={{
+        width: '43%',
+        flexShrink: 0,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '64px 48px',
+        backgroundColor: '#F7F6F3',
+      }}>
+        <div />
+        <MedUpLogo size="lg" />
+        <Footer />
+      </div>
+
+      {/* ── Right panel ── */}
+      <div
+        className="login-dark-panel lg:relative lg:justify-center"
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          minHeight: '100vh',
+          padding: '48px 24px',
+          gap: 32,
+        }}
+      >
+        {/* Logo (mobile only) */}
+        <div className="lg:hidden">
+          <MedUpLogo size="md" />
         </div>
 
         {/* Card */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-
-          {/* Tabs */}
-          <div
-            className="grid grid-cols-2"
-            style={{ borderBottom: '1px solid hsl(var(--border))' }}
-          >
-            {(['login', 'cadastro'] as Tab[]).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className="py-3 text-sm font-medium transition-colors"
-                style={{
-                  color: tab === t ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
-                  borderBottom: tab === t ? '2px solid hsl(var(--primary))' : '2px solid transparent',
-                  backgroundColor: 'transparent',
-                  marginBottom: '-1px',
-                }}
-              >
-                {t === 'login' ? 'Entrar' : 'Criar conta'}
-              </button>
-            ))}
-          </div>
-
-          <div style={{ padding: '1.5rem' }}>
-
-            {/* ===== LOGIN ===== */}
-            {tab === 'login' && (
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div>
-                  <label htmlFor="email" className="field-label">Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="field"
-                    placeholder="seu@email.com"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="password" className="field-label">Senha</label>
-                  <input
-                    id="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="field"
-                    placeholder="••••••••"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                  />
-                </div>
-
-                {loginError && (
-                  <p className="text-sm rounded-lg px-3 py-2" style={{ color: '#b91c1c', backgroundColor: '#fee2e2' }}>
-                    {loginError}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loginLoading}
-                  className="btn-primary w-full mt-2"
-                >
-                  {loginLoading ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                      </svg>
-                      Entrando...
-                    </>
-                  ) : 'Entrar'}
-                </button>
-
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t" style={{ borderColor: 'hsl(var(--border))' }}></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2" style={{ color: 'hsl(var(--muted-foreground))', backgroundColor: 'hsl(var(--background))' }}>
-                      Ou continue com
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  disabled={googleLoading}
-                  className="w-full py-2.5 px-4 border rounded-lg flex items-center justify-center gap-2 hover:bg-black/5 transition-colors font-medium text-sm"
-                  style={{ borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }}
-                >
-                  {googleLoading ? (
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                    </svg>
-                  )}
-                  Google
-                </button>
-              </form>
-            )}
-
-            {/* ===== CADASTRO ===== */}
-            {tab === 'cadastro' && (
-              <>
-                {cadastroSuccess ? (
-                  <div className="text-center py-4 space-y-3">
-                    <div
-                      className="inline-flex items-center justify-center w-12 h-12 rounded-full"
-                      style={{ backgroundColor: '#E6F4ED', color: '#5A7A5C' }}
-                    >
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12"/>
-                      </svg>
-                    </div>
-                    <p className="text-sm font-medium" style={{ color: 'hsl(var(--foreground))' }}>
-                      Conta criada com sucesso!
-                    </p>
-                    <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                      Sua conta já está pronta para uso. Agora é só entrar!
-                    </p>
-                    <button
-                      onClick={() => { setCadastroSuccess(false); setTab('login') }}
-                      className="text-sm font-medium"
-                      style={{ color: 'hsl(var(--primary))' }}
-                    >
-                      Ir para o login →
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleCadastro} className="space-y-4">
-                    <div>
-                      <label htmlFor="nome" className="field-label">Nome completo</label>
-                      <input
-                        id="nome"
-                        type="text"
-                        autoComplete="name"
-                        required
-                        className="field"
-                        placeholder="Dr. João Silva"
-                        value={cadastroNome}
-                        onChange={(e) => setCadastroNome(e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="cadastro-email" className="field-label">Email</label>
-                      <input
-                        id="cadastro-email"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        className="field"
-                        placeholder="seu@email.com"
-                        value={cadastroEmail}
-                        onChange={(e) => setCadastroEmail(e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="cadastro-password" className="field-label">Senha</label>
-                      <input
-                        id="cadastro-password"
-                        type="password"
-                        autoComplete="new-password"
-                        required
-                        minLength={6}
-                        className="field"
-                        placeholder="Mínimo 6 caracteres"
-                        value={cadastroPassword}
-                        onChange={(e) => setCadastroPassword(e.target.value)}
-                      />
-                    </div>
-
-                    {cadastroError && (
-                      <p className="text-sm rounded-lg px-3 py-2" style={{ color: '#b91c1c', backgroundColor: '#fee2e2' }}>
-                        {cadastroError}
-                      </p>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={cadastroLoading}
-                      className="btn-primary w-full mt-2"
-                    >
-                      {cadastroLoading ? (
-                        <>
-                          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                          </svg>
-                          Criando conta...
-                        </>
-                      ) : 'Criar conta'}
-                    </button>
-
-                    <div className="relative my-6">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t" style={{ borderColor: 'hsl(var(--border))' }}></div>
-                      </div>
-                      <div className="relative flex justify-center text-sm">
-                        <span className="px-2" style={{ color: 'hsl(var(--muted-foreground))', backgroundColor: 'hsl(var(--background))' }}>
-                          Ou continue com
-                        </span>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleGoogleLogin}
-                      disabled={googleLoading}
-                      className="w-full py-2.5 px-4 border rounded-lg flex items-center justify-center gap-2 hover:bg-black/5 transition-colors font-medium text-sm"
-                      style={{ borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }}
-                    >
-                      {googleLoading ? (
-                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                        </svg>
-                      ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24">
-                          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                        </svg>
-                      )}
-                      Google
-                    </button>
-                  </form>
-                )}
-              </>
-            )}
-
-          </div>
+        <div style={{ width: '100%', maxWidth: 380 }}>
+          {card}
         </div>
 
-        {/* Rodapé */}
-        <div className="flex flex-col items-center gap-2 mt-4 text-xs" style={{ color: 'hsl(var(--muted-foreground) / 0.6)' }}>
-          <p>
-            by{' '}
-            <span className="font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>
-              Post Up — Ads &amp; Social
-            </span>
-          </p>
-          <div className="flex gap-4">
-            <a href="/privacidade" className="hover:underline" style={{ color: 'hsl(var(--muted-foreground))' }}>Política de Privacidade</a>
-            <a href="/termos" className="hover:underline" style={{ color: 'hsl(var(--muted-foreground))' }}>Termos de Serviço</a>
-          </div>
+        {/* Footer mobile */}
+        <div className="lg:hidden" style={{ marginTop: 'auto', textAlign: 'center' }}>
+          <Footer />
         </div>
 
+        {/* Footer desktop — absolute bottom */}
+        <div className="hidden lg:block" style={{ position: 'absolute', bottom: 32, textAlign: 'center' }}>
+          <Footer dark />
+        </div>
       </div>
+
     </div>
   )
 }
