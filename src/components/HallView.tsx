@@ -43,7 +43,7 @@ const OPTIONS = [
   },
 ]
 
-export default function HallView() {
+export default function HallView({ userName = 'Rafaela' }: { userName?: string }) {
   const router = useRouter()
 
   const today = new Intl.DateTimeFormat('pt-BR', {
@@ -58,7 +58,7 @@ export default function HallView() {
       <p className="text-xs mb-6 capitalize" style={{ color: '#7A756E' }}>{today}</p>
 
       <h1 className="text-2xl font-bold mb-1" style={{ color: '#1A1816', letterSpacing: '-0.4px' }}>
-        Olá, Rafaela
+        Olá, {userName}
       </h1>
       <p className="text-sm mb-8" style={{ color: '#7A756E' }}>O que você quer fazer hoje?</p>
 

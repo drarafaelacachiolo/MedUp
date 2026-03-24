@@ -47,25 +47,13 @@ export default function FilterBar({
       </div>
 
       {/* Filtro de mês */}
-      <div className="flex items-center gap-2">
-        <input
-          type="month"
-          className="field py-2 text-sm w-auto"
-          style={{ minHeight: '40px' }}
-          value={month}
-          onChange={(e) => onMonthChange(e.target.value)}
-        />
-        {month && (
-          <button
-            onClick={() => onMonthChange('')}
-            className="text-xs px-2 py-1.5 rounded transition-colors"
-            style={{ color: 'hsl(var(--muted-foreground))' }}
-            title="Ver todos os meses"
-          >
-            Todos os meses
-          </button>
-        )}
-      </div>
+      <input
+        type="month"
+        className="field py-2 text-sm w-auto"
+        style={{ minHeight: '40px' }}
+        value={month}
+        onChange={(e) => onMonthChange(e.target.value)}
+      />
     </div>
   )
 }

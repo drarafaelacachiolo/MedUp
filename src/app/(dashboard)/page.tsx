@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { createClient } from '@/lib/supabase/server'
 import HallView from '@/components/HallView'
 import NovoLancamentoForm from '@/components/novo-lancamento/NovoLancamentoForm'
 import DashboardView from '@/components/dashboard/DashboardView'
@@ -27,9 +28,16 @@ export default async function HomePage({
   const tab  = params?.tab  ?? 'hall'
   const date = params?.date ?? undefined
 
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const emailPrefix = user?.email?.split('@')[0] ?? ''
+  const userName = emailPrefix
+    ? emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1)
+    : 'Usuário'
+
   return (
     <>
-      {tab === 'hall' && <HallView />}
+      {tab === 'hall' && <HallView userName={userName} />}
 
       {tab === 'novo' && <NovoLancamentoForm initialDate={date} />}
 
