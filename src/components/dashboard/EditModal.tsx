@@ -40,7 +40,6 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
       .then(({ data }) => {
         const cats = (data as Categoria[]) ?? []
         setCategorias(cats)
-        // Tenta encontrar categoria correspondente ao tipo+tempo do item
         const match = cats.find((c) => c.tipo === item.tipo && c.tempo === item.tempo)
         if (match) setCategoriaId(match.id)
         setLoadingCats(false)
@@ -74,7 +73,6 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
       return
     }
 
-    // Validar consistência de recebimento
     const temData = !!form.data_recebimento
     const temValor = !!form.valor_recebido
 
@@ -106,24 +104,21 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal */}
       <div
         className="relative z-10 bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-6 overflow-y-auto"
-        style={{ border: '1px solid var(--border)', maxHeight: '92vh' }}
+        style={{ border: '1px solid hsl(var(--border))', maxHeight: '92vh' }}
       >
-        {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-semibold" style={{ color: 'var(--ink)' }}>
+          <h3 className="text-base font-semibold" style={{ color: 'hsl(var(--foreground))' }}>
             Editar Registro
           </h3>
           <button
             onClick={onClose}
             className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors"
-            style={{ color: 'var(--ink-light)' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--ivory-mid)'}
+            style={{ color: 'hsl(var(--muted-foreground))' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--muted))'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -133,7 +128,6 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Data do atendimento */}
           <div>
             <label className="field-label">Data do Atendimento *</label>
             <input
@@ -145,11 +139,10 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             />
           </div>
 
-          {/* Categoria */}
           <div>
             <label className="field-label">Tipo de Atendimento *</label>
             {loadingCats ? (
-              <div className="field flex items-center" style={{ color: 'var(--ink-light)' }}>
+              <div className="field flex items-center" style={{ color: 'hsl(var(--muted-foreground))' }}>
                 <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
@@ -168,15 +161,13 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
                 ))}
               </select>
             )}
-            {/* Fallback manual caso a categoria não exista mais */}
             {!loadingCats && !categoriaId && (
-              <p className="text-xs mt-1" style={{ color: 'var(--ink-light)' }}>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--muted-foreground))' }}>
                 Tipo atual: <strong>{form.tipo} · {form.tempo}</strong> — selecione uma categoria acima para alterar
               </p>
             )}
           </div>
 
-          {/* Local */}
           <div>
             <label className="field-label">Local *</label>
             <input
@@ -189,7 +180,6 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             />
           </div>
 
-          {/* Paciente */}
           <div>
             <label className="field-label">Paciente / Identificação</label>
             <input
@@ -201,7 +191,6 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             />
           </div>
 
-          {/* Valor e Previsão */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="field-label">Valor a Receber (R$) *</label>
@@ -229,7 +218,6 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             </div>
           </div>
 
-          {/* Observações */}
           <div>
             <label className="field-label">Observações</label>
             <textarea
@@ -242,12 +230,11 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             />
           </div>
 
-          {/* Recebimento */}
           <div
             className="rounded-xl p-4 space-y-4"
-            style={{ backgroundColor: 'var(--ivory-mid)', border: '1px solid var(--border)' }}
+            style={{ backgroundColor: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))' }}
           >
-            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--ink-light)' }}>
+            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'hsl(var(--muted-foreground))' }}>
               Recebimento — opcional
             </p>
 

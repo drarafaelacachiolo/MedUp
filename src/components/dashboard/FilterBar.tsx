@@ -26,7 +26,7 @@ export default function FilterBar({
       {/* Filtro de status */}
       <div
         className="flex rounded-lg overflow-hidden"
-        style={{ border: '1px solid var(--border-mid)' }}
+        style={{ border: '1px solid hsl(var(--border))' }}
       >
         {STATUS_OPTIONS.map((opt) => {
           const isActive = status === opt.key
@@ -36,8 +36,8 @@ export default function FilterBar({
               onClick={() => onStatusChange(opt.key)}
               className="px-3 py-2 text-sm font-medium transition-colors"
               style={{
-                backgroundColor: isActive ? 'var(--teal)' : 'transparent',
-                color: isActive ? '#fff' : 'var(--ink-mid)',
+                backgroundColor: isActive ? 'hsl(var(--primary))' : 'transparent',
+                color: isActive ? 'hsl(var(--primary-foreground))' : 'hsl(var(--foreground) / 0.65)',
               }}
             >
               {opt.label}
@@ -59,7 +59,7 @@ export default function FilterBar({
           <button
             onClick={() => onMonthChange('')}
             className="text-xs px-2 py-1.5 rounded transition-colors"
-            style={{ color: 'var(--ink-light)' }}
+            style={{ color: 'hsl(var(--muted-foreground))' }}
             title="Ver todos os meses"
           >
             Todos os meses

@@ -21,7 +21,7 @@ function TabBarInner({ activeTab }: { activeTab: string }) {
   return (
     <nav
       className="flex border-b sticky top-0 z-10 bg-white"
-      style={{ borderColor: 'var(--border)' }}
+      style={{ borderColor: 'hsl(var(--border))' }}
     >
       {TABS.map((tab) => {
         const isActive = activeTab === tab.key
@@ -31,18 +31,16 @@ function TabBarInner({ activeTab }: { activeTab: string }) {
             onClick={() => navigate(tab.key)}
             className="flex-1 py-3 px-2 text-sm font-medium transition-colors relative"
             style={{
-              color: isActive ? 'var(--teal)' : 'var(--ink-light)',
+              color: isActive ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
             }}
           >
-            {/* Label completo em telas maiores, curto no mobile */}
             <span className="hidden sm:inline">{tab.label}</span>
             <span className="sm:hidden">{tab.shortLabel}</span>
 
-            {/* Indicador de aba ativa */}
             {isActive && (
               <span
                 className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t"
-                style={{ backgroundColor: 'var(--teal)' }}
+                style={{ backgroundColor: 'hsl(var(--primary))' }}
               />
             )}
           </button>
@@ -61,7 +59,7 @@ export default function TabShell({
 }) {
   return (
     <>
-      <Suspense fallback={<div className="h-12 border-b" style={{ borderColor: 'var(--border)' }} />}>
+      <Suspense fallback={<div className="h-12 border-b" style={{ borderColor: 'hsl(var(--border))' }} />}>
         <TabBarInner activeTab={activeTab} />
       </Suspense>
       <main className="flex-1 overflow-auto">

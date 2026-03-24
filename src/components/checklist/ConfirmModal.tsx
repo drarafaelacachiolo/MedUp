@@ -45,27 +45,24 @@ export default function ConfirmModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
       <div
         className="relative z-10 bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-6"
-        style={{ border: '1px solid var(--border)' }}
+        style={{ border: '1px solid hsl(var(--border))' }}
       >
-        {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-semibold" style={{ color: 'var(--ink)' }}>
+          <h3 className="text-base font-semibold" style={{ color: 'hsl(var(--foreground))' }}>
             Confirmar Recebimento
           </h3>
           <button
             onClick={onClose}
             className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors"
-            style={{ color: 'var(--ink-light)' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--ivory-mid)'}
+            style={{ color: 'hsl(var(--muted-foreground))' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'hsl(var(--muted))'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -75,27 +72,25 @@ export default function ConfirmModal({
           </button>
         </div>
 
-        {/* Info do atendimento (readonly) */}
         <div
           className="rounded-xl p-4 mb-5 space-y-1"
-          style={{ backgroundColor: 'var(--ivory-mid)', borderLeft: '3px solid var(--amber)' }}
+          style={{ backgroundColor: 'hsl(var(--muted))', borderLeft: '3px solid #C4752A' }}
         >
           {item.paciente && (
-            <p className="text-xs font-medium" style={{ color: 'var(--mauve)' }}>{item.paciente}</p>
+            <p className="text-xs font-medium" style={{ color: 'hsl(var(--foreground) / 0.65)' }}>{item.paciente}</p>
           )}
-          <p className="font-medium text-sm" style={{ color: 'var(--ink)' }}>{item.local}</p>
-          <p className="text-xs" style={{ color: 'var(--ink-light)' }}>
+          <p className="font-medium text-sm" style={{ color: 'hsl(var(--foreground))' }}>{item.local}</p>
+          <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground))' }}>
             {item.tipo} · {item.tempo} · {formatDate(item.data_atendimento)}
           </p>
-          <p className="text-sm font-semibold tabular-nums mt-1" style={{ color: 'var(--amber)' }}>
+          <p className="text-sm font-semibold tabular-nums mt-1" style={{ color: '#C4752A' }}>
             Esperado: {formatCurrency(item.valor_a_receber)}
           </p>
-          <p className="text-xs" style={{ color: 'var(--ink-light)' }}>
+          <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground))' }}>
             Previsão: {formatDate(item.data_prevista_pagamento)}
           </p>
         </div>
 
-        {/* Formulário */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="field-label">Data que Recebeu *</label>
@@ -153,7 +148,7 @@ export default function ConfirmModal({
               type="submit"
               disabled={isLoading}
               className="btn-primary flex-1"
-              style={{ backgroundColor: 'var(--forest)' }}
+              style={{ backgroundColor: '#5A7A5C' }}
             >
               {isLoading ? (
                 <>

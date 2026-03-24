@@ -16,14 +16,14 @@ export default function LogoutButton() {
     <button
       onClick={handleLogout}
       className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg transition-colors"
-      style={{ color: 'var(--ink-light)' }}
+      style={{ color: 'hsl(var(--muted-foreground))' }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'var(--ivory-mid)'
-        e.currentTarget.style.color = 'var(--ink)'
+        e.currentTarget.style.backgroundColor = 'hsl(var(--muted))'
+        e.currentTarget.style.color = 'hsl(var(--foreground))'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = 'transparent'
-        e.currentTarget.style.color = 'var(--ink-light)'
+        e.currentTarget.style.color = 'hsl(var(--muted-foreground))'
       }}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

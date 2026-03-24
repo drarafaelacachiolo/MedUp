@@ -95,7 +95,7 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center p-4"
-      style={{ backgroundColor: 'var(--surface-base)' }}
+      style={{ backgroundColor: 'hsl(var(--background))' }}
     >
       <div className="w-full max-w-sm flex flex-col gap-6">
 
@@ -103,9 +103,8 @@ export default function LoginPage() {
         <div className="text-center">
           <div
             className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4"
-            style={{ backgroundColor: 'var(--wine)', color: '#fff' }}
+            style={{ backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}
           >
-            {/* Ícone de pulso médico + seta up */}
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
             </svg>
@@ -113,14 +112,14 @@ export default function LoginPage() {
           <h1
             className="text-4xl font-semibold tracking-tight"
             style={{
-              fontFamily: 'var(--font-display), "Cormorant Garamond", Georgia, serif',
-              color: 'var(--wine)',
+              fontFamily: 'var(--font-serif)',
+              color: 'hsl(var(--primary))',
               letterSpacing: '-0.02em',
             }}
           >
             MedUp
           </h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--ink-light)' }}>
+          <p className="text-sm mt-1" style={{ color: 'hsl(var(--muted-foreground))' }}>
             Controle financeiro para médicos
           </p>
         </div>
@@ -131,7 +130,7 @@ export default function LoginPage() {
           {/* Tabs */}
           <div
             className="grid grid-cols-2"
-            style={{ borderBottom: '1px solid var(--border)' }}
+            style={{ borderBottom: '1px solid hsl(var(--border))' }}
           >
             {(['login', 'cadastro'] as Tab[]).map((t) => (
               <button
@@ -139,8 +138,8 @@ export default function LoginPage() {
                 onClick={() => setTab(t)}
                 className="py-3 text-sm font-medium transition-colors"
                 style={{
-                  color: tab === t ? 'var(--wine)' : 'var(--ink-light)',
-                  borderBottom: tab === t ? '2px solid var(--wine)' : '2px solid transparent',
+                  color: tab === t ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))',
+                  borderBottom: tab === t ? '2px solid hsl(var(--primary))' : '2px solid transparent',
                   backgroundColor: 'transparent',
                   marginBottom: '-1px',
                 }}
@@ -184,7 +183,7 @@ export default function LoginPage() {
                 </div>
 
                 {loginError && (
-                  <p className="text-sm rounded-lg px-3 py-2" style={{ color: '#9B1D3E', backgroundColor: '#F8E5EB' }}>
+                  <p className="text-sm rounded-lg px-3 py-2" style={{ color: '#b91c1c', backgroundColor: '#fee2e2' }}>
                     {loginError}
                   </p>
                 )}
@@ -207,10 +206,10 @@ export default function LoginPage() {
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t" style={{ borderColor: 'var(--border)' }}></div>
+                    <div className="w-full border-t" style={{ borderColor: 'hsl(var(--border))' }}></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-2" style={{ color: 'var(--ink-light)', backgroundColor: 'var(--surface-base)' }}>
+                    <span className="px-2" style={{ color: 'hsl(var(--muted-foreground))', backgroundColor: 'hsl(var(--background))' }}>
                       Ou continue com
                     </span>
                   </div>
@@ -221,7 +220,7 @@ export default function LoginPage() {
                   onClick={handleGoogleLogin}
                   disabled={googleLoading}
                   className="w-full py-2.5 px-4 border rounded-lg flex items-center justify-center gap-2 hover:bg-black/5 transition-colors font-medium text-sm"
-                  style={{ borderColor: 'var(--border)', color: 'var(--ink)' }}
+                  style={{ borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }}
                 >
                   {googleLoading ? (
                     <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
@@ -248,22 +247,22 @@ export default function LoginPage() {
                   <div className="text-center py-4 space-y-3">
                     <div
                       className="inline-flex items-center justify-center w-12 h-12 rounded-full"
-                      style={{ backgroundColor: '#E6F4ED', color: 'var(--forest)' }}
+                      style={{ backgroundColor: '#E6F4ED', color: '#5A7A5C' }}
                     >
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                     </div>
-                    <p className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
+                    <p className="text-sm font-medium" style={{ color: 'hsl(var(--foreground))' }}>
                       Conta criada com sucesso!
                     </p>
-                    <p className="text-xs" style={{ color: 'var(--ink-light)' }}>
+                    <p className="text-xs" style={{ color: 'hsl(var(--muted-foreground))' }}>
                       Verifique seu email para confirmar o cadastro e então faça login.
                     </p>
                     <button
                       onClick={() => { setCadastroSuccess(false); setTab('login') }}
                       className="text-sm font-medium"
-                      style={{ color: 'var(--wine)' }}
+                      style={{ color: 'hsl(var(--primary))' }}
                     >
                       Ir para o login →
                     </button>
@@ -278,7 +277,7 @@ export default function LoginPage() {
                         autoComplete="name"
                         required
                         className="field"
-                        placeholder="Dra. Maria Silva"
+                        placeholder="Dr. João Silva"
                         value={cadastroNome}
                         onChange={(e) => setCadastroNome(e.target.value)}
                       />
@@ -314,7 +313,7 @@ export default function LoginPage() {
                     </div>
 
                     {cadastroError && (
-                      <p className="text-sm rounded-lg px-3 py-2" style={{ color: '#9B1D3E', backgroundColor: '#F8E5EB' }}>
+                      <p className="text-sm rounded-lg px-3 py-2" style={{ color: '#b91c1c', backgroundColor: '#fee2e2' }}>
                         {cadastroError}
                       </p>
                     )}
@@ -337,10 +336,10 @@ export default function LoginPage() {
 
                     <div className="relative my-6">
                       <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t" style={{ borderColor: 'var(--border)' }}></div>
+                        <div className="w-full border-t" style={{ borderColor: 'hsl(var(--border))' }}></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-2" style={{ color: 'var(--ink-light)', backgroundColor: 'var(--surface-base)' }}>
+                        <span className="px-2" style={{ color: 'hsl(var(--muted-foreground))', backgroundColor: 'hsl(var(--background))' }}>
                           Ou continue com
                         </span>
                       </div>
@@ -351,7 +350,7 @@ export default function LoginPage() {
                       onClick={handleGoogleLogin}
                       disabled={googleLoading}
                       className="w-full py-2.5 px-4 border rounded-lg flex items-center justify-center gap-2 hover:bg-black/5 transition-colors font-medium text-sm"
-                      style={{ borderColor: 'var(--border)', color: 'var(--ink)' }}
+                      style={{ borderColor: 'hsl(var(--border))', color: 'hsl(var(--foreground))' }}
                     >
                       {googleLoading ? (
                         <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none">
@@ -376,17 +375,17 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Rodapé Post Up e Links Legais */}
-        <div className="flex flex-col items-center gap-2 mt-4 text-xs" style={{ color: 'var(--ink-faint)' }}>
+        {/* Rodapé */}
+        <div className="flex flex-col items-center gap-2 mt-4 text-xs" style={{ color: 'hsl(var(--muted-foreground) / 0.6)' }}>
           <p>
             by{' '}
-            <span className="font-medium" style={{ color: 'var(--ink-light)' }}>
+            <span className="font-medium" style={{ color: 'hsl(var(--muted-foreground))' }}>
               Post Up — Ads &amp; Social
             </span>
           </p>
           <div className="flex gap-4">
-            <a href="/privacidade" className="hover:underline" style={{ color: 'var(--ink-light)' }}>Política de Privacidade</a>
-            <a href="/termos" className="hover:underline" style={{ color: 'var(--ink-light)' }}>Termos de Serviço</a>
+            <a href="/privacidade" className="hover:underline" style={{ color: 'hsl(var(--muted-foreground))' }}>Política de Privacidade</a>
+            <a href="/termos" className="hover:underline" style={{ color: 'hsl(var(--muted-foreground))' }}>Termos de Serviço</a>
           </div>
         </div>
 

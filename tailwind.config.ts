@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: ["class"],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,67 +10,67 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Rafaela Finance — paleta vinho
-        wine: {
-          50:  '#FBF3F7',
-          100: '#F5E6EF',
-          200: '#E8C5D6',
-          300: '#D4A0BA',
-          400: '#B5747D',
-          500: '#9A5070',
-          600: '#7A3D5C',
-          700: '#5B2D45',
-          800: '#3D1A2C',
-          900: '#26101C',
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
-        blush: {
-          50:  '#FDF8F6',
-          100: '#F7EDE8',
-          200: '#EFE3DC',
-          300: '#E6D5CB',
-          400: '#D8B8B0',
-          500: '#C49A90',
-          600: '#AD7D73',
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
-        mauve: {
-          400: '#C4919A',
-          500: '#B5747D',
-          600: '#9A5D66',
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
-        // Semânticos
-        sage: {
-          50:  '#F1F6F2',
-          100: '#E0EDE2',
-          200: '#AFCBB3',
-          500: '#5A7A5C',
-          600: '#4A6B4C',
-          700: '#3D5E3F',
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
-        amber: {
-          50:  '#FEF5E9',
-          100: '#FDE9CC',
-          500: '#D98A3C',
-          600: '#C4752A',
-          700: '#8A500A',
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
-        overdue: {
-          50:  '#FAF0F3',
-          200: '#F0C5D0',
-          500: '#C0405E',
-          700: '#9B1D3E',
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
+        chart: {
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
+        },
+      },
+      borderRadius: {
+        xl: "calc(var(--radius) + 4px)",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        display: ['var(--font-display)', 'Cormorant Garamond', 'Georgia', 'serif'],
-        sans: ['var(--font-sans)', 'Jost', 'system-ui', 'sans-serif'],
-        mono: ['"SF Mono"', 'Monaco', '"Cascadia Code"', '"Roboto Mono"', 'Menlo', 'monospace'],
-      },
-      spacing: {
-        '18': '4.5rem',
-        '22': '5.5rem',
-      },
-      minHeight: {
-        '12': '3rem',
+        sans: ["var(--font-sans)"],
+        serif: ["var(--font-serif)"],
+        mono: ["var(--font-mono)"],
       },
     },
   },

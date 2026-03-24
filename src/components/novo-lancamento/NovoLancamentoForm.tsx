@@ -15,7 +15,6 @@ const emptyForm = {
   valor_a_receber: '',
   data_prevista_pagamento: '',
   observacoes: '',
-  // opcionais
   data_recebimento: '',
   valor_recebido: '',
   banco: '',
@@ -89,7 +88,6 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
 
     if (!dbError && data) {
       await fetchCategorias()
-      // Selecionar a nova categoria automaticamente
       setForm((prev) => ({
         ...prev,
         categoriaId: (data as Categoria).id,
@@ -160,7 +158,6 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Data do atendimento */}
         <div>
           <label className="field-label">Data do Atendimento *</label>
           <input
@@ -172,11 +169,10 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           />
         </div>
 
-        {/* Categoria (tipo + tempo combinados) */}
         <div>
           <label className="field-label">Tipo de Atendimento *</label>
           {loadingCategorias ? (
-            <div className="field flex items-center" style={{ color: 'var(--ink-light)' }}>
+            <div className="field flex items-center" style={{ color: 'hsl(var(--muted-foreground))' }}>
               <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
@@ -199,13 +195,12 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
             </select>
           )}
 
-          {/* Mini-form de nova categoria */}
           <div className="mt-2">
             <button
               type="button"
               onClick={() => setShowNovaCategoria((v) => !v)}
               className="flex items-center gap-1.5 text-xs font-medium transition-colors"
-              style={{ color: 'var(--teal-light)' }}
+              style={{ color: 'hsl(var(--ring))' }}
             >
               <svg
                 width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -220,9 +215,9 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
             {showNovaCategoria && (
               <div
                 className="mt-3 rounded-xl p-4 space-y-3"
-                style={{ backgroundColor: 'var(--ivory-mid)', border: '1px solid var(--border)' }}
+                style={{ backgroundColor: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))' }}
               >
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--ink-light)' }}>
+                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'hsl(var(--muted-foreground))' }}>
                   Criar nova categoria
                 </p>
 
@@ -275,7 +270,6 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           </div>
         </div>
 
-        {/* Local */}
         <div>
           <label className="field-label">Local *</label>
           <input
@@ -288,7 +282,6 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           />
         </div>
 
-        {/* Paciente */}
         <div>
           <label className="field-label">Paciente / Identificação</label>
           <input
@@ -300,7 +293,6 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           />
         </div>
 
-        {/* Valor e Previsão */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="field-label">Valor a Receber (R$) *</label>
@@ -328,7 +320,6 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           </div>
         </div>
 
-        {/* Observações */}
         <div>
           <label className="field-label">Observações</label>
           <textarea
@@ -341,12 +332,11 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           />
         </div>
 
-        {/* Seção opcional de recebimento */}
         <div
           className="rounded-xl p-4 space-y-4 mt-2"
-          style={{ backgroundColor: 'var(--ivory-mid)', border: '1px solid var(--border)' }}
+          style={{ backgroundColor: 'hsl(var(--muted))', border: '1px solid hsl(var(--border))' }}
         >
-          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--ink-light)' }}>
+          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'hsl(var(--muted-foreground))' }}>
             Recebimento — opcional
           </p>
 

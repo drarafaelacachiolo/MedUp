@@ -13,17 +13,15 @@ import type {
   StatusAtendimento,
 } from '@/types/database'
 
-// ─── tipos ─────────────────────────────────────────────────────────────────
 type ViewMode = 'trabalho' | 'recebimentos' | 'previsao'
 
-// ─── helpers de calendário ──────────────────────────────────────────────────
 const WEEK_DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
 
 function getCalendarDays(yearMonth: string): (string | null)[] {
   const [year, month] = yearMonth.split('-').map(Number)
   const firstDay = new Date(year, month - 1, 1)
   const lastDay  = new Date(year, month, 0)
-  const startOffset = (firstDay.getDay() + 6) % 7 // segunda = 0
+  const startOffset = (firstDay.getDay() + 6) % 7
   const cells: (string | null)[] = []
   for (let i = 0; i < startOffset; i++) cells.push(null)
   for (let d = 1; d <= lastDay.getDate(); d++) {
@@ -55,8 +53,8 @@ function getEventDate(item: AtendimentoWithStatus, mode: ViewMode): string | nul
 function chipStyle(item: AtendimentoWithStatus, mode: ViewMode): React.CSSProperties {
   if (mode === 'trabalho') {
     return item.tipo === 'Plantão'
-      ? { backgroundColor: '#5B2D45', color: '#fff' }
-      : { backgroundColor: '#B5747D', color: '#fff' }
+      ? { backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }
+      : { backgroundColor: 'hsl(var(--secondary))', color: 'hsl(var(--secondary-foreground))' }
   }
   if (mode === 'recebimentos') {
     return { backgroundColor: '#D1EDD4', color: '#2F5E34' }
@@ -76,12 +74,11 @@ function chipLabel(item: AtendimentoWithStatus, mode: ViewMode): string {
 }
 
 function dotColor(item: AtendimentoWithStatus, mode: ViewMode): string {
-  if (mode === 'trabalho') return item.tipo === 'Plantão' ? '#5B2D45' : '#B5747D'
+  if (mode === 'trabalho') return item.tipo === 'Plantão' ? 'hsl(var(--primary))' : 'hsl(var(--ring))'
   if (mode === 'recebimentos') return '#5A7B5C'
   return daysOverdue(item.data_prevista_pagamento, item.status) > 0 ? '#9B2040' : '#d97706'
 }
 
-// ─── componente principal ──────────────────────────────────────────────────
 interface Props { atendimentos: AtendimentoWithStatus[] }
 
 export default function CalendarClient({ atendimentos: initial }: Props) {
@@ -98,10 +95,8 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const [actionError, setActionError] = useState('')
 
-  // ── navegação de mês
   const calendarDays = useMemo(() => getCalendarDays(currentMonth), [currentMonth])
 
-  // ── agrupar eventos por data conforme modo
   const eventsByDate = useMemo(() => {
     const map = new Map<string, AtendimentoWithStatus[]>()
     for (const a of atendimentos) {
@@ -120,7 +115,6 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
     [selectedDay, eventsByDate]
   )
 
-  // ── handlers de ação
   async function handleConfirm(formData: ConfirmReceiptInput) {
     setIsLoading(true)
     setActionError('')
@@ -169,15 +163,14 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
 
   return (
     <div className="p-4 sm:p-6">
-      {/* ── cabeçalho ──────────────────────────────────────── */}
+      {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
-        {/* Navegação de mês */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => { setCurrentMonth((m) => shiftMonth(m, -1)); setSelectedDay(null) }}
             className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors"
-            style={{ border: '1px solid var(--border)', color: 'var(--ink-mid)' }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ivory-mid)' }}
+            style={{ border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground) / 0.65)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--muted))' }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -185,15 +178,15 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
             </svg>
           </button>
 
-          <h2 className="text-base sm:text-lg font-semibold tabular-nums min-w-[180px] text-center" style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}>
+          <h2 className="text-base sm:text-lg font-semibold tabular-nums min-w-[180px] text-center" style={{ fontFamily: 'var(--font-serif)', color: 'hsl(var(--foreground))' }}>
             {monthTitle(currentMonth)}
           </h2>
 
           <button
             onClick={() => { setCurrentMonth((m) => shiftMonth(m, 1)); setSelectedDay(null) }}
             className="flex items-center justify-center w-8 h-8 rounded-lg transition-colors"
-            style={{ border: '1px solid var(--border)', color: 'var(--ink-mid)' }}
-            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ivory-mid)' }}
+            style={{ border: '1px solid hsl(var(--border))', color: 'hsl(var(--foreground) / 0.65)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--muted))' }}
             onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -205,8 +198,8 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
             <button
               onClick={() => { setCurrentMonth(currentYM); setSelectedDay(null) }}
               className="text-xs px-2 py-1 rounded-md transition-colors"
-              style={{ color: 'var(--wine)', border: '1px solid var(--border)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--ivory-mid)' }}
+              style={{ color: 'hsl(var(--primary))', border: '1px solid hsl(var(--border))' }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--muted))' }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
             >
               Hoje
@@ -215,7 +208,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
         </div>
 
         {/* Modo de visualização */}
-        <div className="flex rounded-lg overflow-hidden self-start sm:self-auto" style={{ border: '1px solid var(--border-mid)' }}>
+        <div className="flex rounded-lg overflow-hidden self-start sm:self-auto" style={{ border: '1px solid hsl(var(--border))' }}>
           {([
             { key: 'trabalho',      label: 'Trabalho' },
             { key: 'recebimentos',  label: 'Recebidos' },
@@ -228,8 +221,8 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                 onClick={() => { setViewMode(key); setSelectedDay(null) }}
                 className="px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap"
                 style={{
-                  backgroundColor: active ? 'var(--wine)' : 'transparent',
-                  color: active ? '#fff' : 'var(--ink-mid)',
+                  backgroundColor: active ? 'hsl(var(--primary))' : 'transparent',
+                  color: active ? 'hsl(var(--primary-foreground))' : 'hsl(var(--foreground) / 0.65)',
                 }}
               >
                 {label}
@@ -245,25 +238,23 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
         </p>
       )}
 
-      {/* ── grade do calendário ────────────────────────────── */}
+      {/* Grade do calendário */}
       <div
         className="rounded-xl overflow-hidden"
-        style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface-card)' }}
+        style={{ border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}
       >
-        {/* Header dos dias da semana */}
-        <div className="grid grid-cols-7" style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--ivory-mid)' }}>
+        <div className="grid grid-cols-7" style={{ borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--muted))' }}>
           {WEEK_DAYS.map((d) => (
             <div
               key={d}
               className="py-2 text-center text-xs font-semibold uppercase tracking-wide"
-              style={{ color: 'var(--ink-light)', letterSpacing: '0.06em' }}
+              style={{ color: 'hsl(var(--muted-foreground))', letterSpacing: '0.06em' }}
             >
               {d}
             </div>
           ))}
         </div>
 
-        {/* Células de dias */}
         <div className="grid grid-cols-7">
           {calendarDays.map((date, i) => {
             const events = date ? (eventsByDate.get(date) ?? []) : []
@@ -280,30 +271,28 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                 className="relative p-1 sm:p-2 transition-colors"
                 style={{
                   minHeight: '80px',
-                  borderRight:  isLastCol  ? 'none' : '1px solid var(--border)',
-                  borderBottom: isLastRow  ? 'none' : '1px solid var(--border)',
+                  borderRight:  isLastCol  ? 'none' : '1px solid hsl(var(--border))',
+                  borderBottom: isLastRow  ? 'none' : '1px solid hsl(var(--border))',
                   backgroundColor: isSelected
-                    ? '#F3ECF0'
+                    ? 'hsl(var(--accent))'
                     : isToday
-                    ? '#FAF5F8'
+                    ? 'hsl(var(--accent) / 0.5)'
                     : 'transparent',
                   cursor: date ? 'pointer' : 'default',
                 }}
               >
-                {/* Número do dia */}
                 <div className="flex justify-end mb-1">
                   <span
                     className="w-6 h-6 flex items-center justify-center rounded-full text-xs font-medium"
                     style={{
-                      backgroundColor: isToday ? 'var(--wine)' : 'transparent',
-                      color: isToday ? '#fff' : date ? 'var(--ink)' : 'var(--ink-faint)',
+                      backgroundColor: isToday ? 'hsl(var(--primary))' : 'transparent',
+                      color: isToday ? 'hsl(var(--primary-foreground))' : date ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground) / 0.6)',
                     }}
                   >
                     {dayNum}
                   </span>
                 </div>
 
-                {/* Chips — visível em sm+ */}
                 <div className="hidden sm:block space-y-0.5">
                   {events.slice(0, 2).map((ev) => (
                     <div
@@ -316,13 +305,12 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                     </div>
                   ))}
                   {events.length > 2 && (
-                    <div className="text-xs pl-1" style={{ color: 'var(--ink-faint)' }}>
+                    <div className="text-xs pl-1" style={{ color: 'hsl(var(--muted-foreground) / 0.6)' }}>
                       +{events.length - 2} mais
                     </div>
                   )}
                 </div>
 
-                {/* Pontos — visível só no mobile */}
                 {events.length > 0 && (
                   <div className="sm:hidden flex flex-wrap gap-0.5 mt-0.5">
                     {events.slice(0, 3).map((ev, j) => (
@@ -333,7 +321,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                       />
                     ))}
                     {events.length > 3 && (
-                      <span className="text-xs leading-none" style={{ color: 'var(--ink-faint)', fontSize: '9px' }}>
+                      <span className="text-xs leading-none" style={{ color: 'hsl(var(--muted-foreground) / 0.6)', fontSize: '9px' }}>
                         +{events.length - 3}
                       </span>
                     )}
@@ -345,24 +333,23 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
         </div>
       </div>
 
-      {/* ── painel de detalhe do dia ───────────────────────── */}
+      {/* Painel de detalhe do dia */}
       {selectedDay && (
         <div
           className="mt-4 rounded-xl overflow-hidden"
-          style={{ border: '1px solid var(--border)', backgroundColor: 'var(--surface-card)' }}
+          style={{ border: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}
         >
-          {/* Header do painel */}
           <div
             className="flex items-center justify-between px-4 sm:px-5 py-3"
-            style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--ivory-mid)' }}
+            style={{ borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--muted))' }}
           >
             <h3
               className="font-semibold text-base"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--ink)' }}
+              style={{ fontFamily: 'var(--font-serif)', color: 'hsl(var(--foreground))' }}
             >
               {formatDate(selectedDay)}
               {dayEvents.length > 0 && (
-                <span className="ml-2 text-sm font-normal" style={{ color: 'var(--ink-light)' }}>
+                <span className="ml-2 text-sm font-normal" style={{ color: 'hsl(var(--muted-foreground))' }}>
                   {dayEvents.length} registro{dayEvents.length !== 1 ? 's' : ''}
                 </span>
               )}
@@ -371,7 +358,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
               <button
                 onClick={() => router.push(`/?tab=novo&date=${selectedDay}`)}
                 className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-                style={{ backgroundColor: 'var(--wine)', color: '#fff' }}
+                style={{ backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))' }}
                 onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.85' }}
                 onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
               >
@@ -383,8 +370,8 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
               <button
                 onClick={() => setSelectedDay(null)}
                 className="flex items-center justify-center w-7 h-7 rounded-lg transition-colors"
-                style={{ color: 'var(--ink-light)' }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--border)' }}
+                style={{ color: 'hsl(var(--muted-foreground))' }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--border))' }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent' }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -394,14 +381,13 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
             </div>
           </div>
 
-          {/* Lista de eventos do dia */}
           <div className="p-4 sm:p-5">
             {dayEvents.length === 0 ? (
               <div className="flex flex-col items-center py-8 text-center">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-2" style={{ color: 'var(--ink-faint)' }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-2" style={{ color: 'hsl(var(--muted-foreground) / 0.6)' }}>
                   <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
-                <p className="text-sm" style={{ color: 'var(--ink-light)' }}>
+                <p className="text-sm" style={{ color: 'hsl(var(--muted-foreground))' }}>
                   {viewMode === 'recebimentos'
                     ? 'Nenhum pagamento recebido neste dia'
                     : viewMode === 'previsao'
@@ -423,30 +409,30 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                       key={ev.id}
                       className="rounded-xl p-3 sm:p-4"
                       style={{
-                        border: '1px solid var(--border)',
+                        border: '1px solid hsl(var(--border))',
                         borderLeft: `3px solid ${leftColor}`,
-                        backgroundColor: 'var(--ivory)',
+                        backgroundColor: 'hsl(var(--accent))',
                       }}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
                           {ev.paciente ? (
                             <>
-                              <p className="font-semibold text-sm truncate" style={{ color: 'var(--ink)' }}>{ev.paciente}</p>
-                              <p className="text-xs truncate" style={{ color: 'var(--ink-light)' }}>{ev.local}</p>
+                              <p className="font-semibold text-sm truncate" style={{ color: 'hsl(var(--foreground))' }}>{ev.paciente}</p>
+                              <p className="text-xs truncate" style={{ color: 'hsl(var(--muted-foreground))' }}>{ev.local}</p>
                             </>
                           ) : (
-                            <p className="font-semibold text-sm truncate" style={{ color: 'var(--ink)' }}>{ev.local}</p>
+                            <p className="font-semibold text-sm truncate" style={{ color: 'hsl(var(--foreground))' }}>{ev.local}</p>
                           )}
-                          <p className="text-xs mt-0.5" style={{ color: 'var(--ink-light)' }}>
+                          <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--muted-foreground))' }}>
                             {ev.tipo} · {ev.tempo}
                           </p>
                           {ev.observacoes && (
-                            <p className="text-xs italic mt-1" style={{ color: 'var(--ink-faint)' }}>{ev.observacoes}</p>
+                            <p className="text-xs italic mt-1" style={{ color: 'hsl(var(--muted-foreground) / 0.6)' }}>{ev.observacoes}</p>
                           )}
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="font-semibold text-sm tabular-nums" style={{ color: 'var(--amber)' }}>
+                          <p className="font-semibold text-sm tabular-nums" style={{ color: '#C4752A' }}>
                             {formatCurrency(ev.valor_a_receber)}
                           </p>
                           {ev.status === 'Pendente' ? (
@@ -462,7 +448,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                       {ev.status === 'Recebido' && (
                         <div
                           className="flex flex-wrap items-center gap-3 mt-2 pt-2 text-xs"
-                          style={{ borderTop: '1px solid var(--border)', color: 'var(--ink-light)' }}
+                          style={{ borderTop: '1px solid hsl(var(--border))', color: 'hsl(var(--muted-foreground))' }}
                         >
                           <span>Recebido: <strong style={{ color: '#5A7B5C' }}>{formatCurrency(ev.valor_recebido)}</strong></span>
                           <span>em {formatDate(ev.data_recebimento)}</span>
@@ -470,7 +456,6 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                         </div>
                       )}
 
-                      {/* Ações */}
                       <div className="flex items-center gap-2 mt-3">
                         {ev.status === 'Pendente' && (
                           <button
@@ -487,7 +472,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                         <button
                           onClick={() => setEditingItem(ev)}
                           className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
-                          style={{ backgroundColor: 'var(--ivory-mid)', color: 'var(--ink-mid)', border: '1px solid var(--border)' }}
+                          style={{ backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--foreground) / 0.65)', border: '1px solid hsl(var(--border))' }}
                         >
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
@@ -516,7 +501,6 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
         </div>
       )}
 
-      {/* ── modais ─────────────────────────────────────────── */}
       {editingItem && (
         <EditModal
           item={editingItem}

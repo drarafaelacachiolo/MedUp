@@ -127,7 +127,7 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
       <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
         <div
           className="flex rounded-lg overflow-hidden"
-          style={{ border: '1px solid var(--border-mid)' }}
+          style={{ border: '1px solid hsl(var(--border))' }}
         >
           {TIPO_TABS.map((tab) => {
             const isActive = tipoFilter === tab.key
@@ -137,8 +137,8 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
                 onClick={() => setTipoFilter(tab.key)}
                 className="px-4 py-2 text-sm font-medium transition-colors"
                 style={{
-                  backgroundColor: isActive ? 'var(--teal)' : 'transparent',
-                  color: isActive ? '#fff' : 'var(--ink-mid)',
+                  backgroundColor: isActive ? 'hsl(var(--primary))' : 'transparent',
+                  color: isActive ? 'hsl(var(--primary-foreground))' : 'hsl(var(--foreground) / 0.65)',
                 }}
               >
                 {tab.label}
@@ -166,7 +166,7 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
         onMonthChange={setMonthFilter}
       />
 
-      <p className="text-xs mb-3" style={{ color: 'var(--ink-light)' }}>
+      <p className="text-xs mb-3" style={{ color: 'hsl(var(--muted-foreground))' }}>
         {filtered.length} registro{filtered.length !== 1 ? 's' : ''} encontrado{filtered.length !== 1 ? 's' : ''}
       </p>
 
