@@ -4,6 +4,7 @@ export type StatusAtendimento = 'Pendente' | 'Recebido'
 /** Linha da tabela `atendimentos` (sem status) */
 export interface Atendimento {
   id: string
+  user_id: string
   created_at: string
   data_atendimento: string        // "YYYY-MM-DD"
   tipo: TipoAtendimento
@@ -56,6 +57,7 @@ export interface EditAtendimentoInput {
 /** Categoria de atendimento (ex: "Plantão 12h") */
 export interface Categoria {
   id: string
+  user_id: string | null
   nome: string
   tipo: TipoAtendimento
   tempo: string

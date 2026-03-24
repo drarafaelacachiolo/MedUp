@@ -74,10 +74,14 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
     setSavingCategoria(true)
 
     const supabase = createClient()
+    const { data: userData } = await supabase.auth.getUser()
+    const user_id = userData?.user?.id
+
     const maxOrdem = categorias.length > 0 ? Math.max(...categorias.map((c) => c.ordem)) : 0
     const { data, error: dbError } = await supabase
       .from('categorias')
       .insert([{
+        user_id,
         nome:  novaCategoria.nome.trim(),
         tipo:  novaCategoria.tipo,
         tempo: novaCategoria.tempo.trim(),
@@ -112,8 +116,15 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
     setLoading(true)
 
     const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      setError('Sessão expirada. Por favor, faça login novamente.')
+      setLoading(false)
+      return
+    }
 
     const payload = {
+      user_id:                 user.id,
       data_atendimento:        form.data_atendimento,
       tipo:                    form.tipo as TipoAtendimento,
       tempo:                   form.tempo,

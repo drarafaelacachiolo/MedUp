@@ -9,6 +9,7 @@ CREATE TYPE tipo_atendimento AS ENUM ('Plantão', 'Consulta');
 -- 2. Tabela principal
 CREATE TABLE IF NOT EXISTS public.atendimentos (
   id                       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id                  UUID NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   created_at               TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   data_atendimento         DATE NOT NULL,
   tipo                     tipo_atendimento NOT NULL,
@@ -48,15 +49,15 @@ SELECT
   END AS status
 FROM public.atendimentos;
 
--- 4. Row Level Security — apenas usuários autenticados têm acesso
+-- 4. Row Level Security — cada usuário vê apenas os seus próprios dados
 ALTER TABLE public.atendimentos ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "authenticated_full_access"
+CREATE POLICY "users_manage_own_atendimentos"
   ON public.atendimentos
   FOR ALL
   TO authenticated
-  USING (true)
-  WITH CHECK (true);
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- 5. Permissões da view (anon não pode ler)
 REVOKE SELECT ON public.atendimentos_view FROM anon, public;
@@ -82,6 +83,7 @@ CREATE INDEX IF NOT EXISTS idx_atendimentos_recebimento
 -- 7. Tabela de categorias (tipo + tempo pré-definidos)
 CREATE TABLE IF NOT EXISTS public.categorias (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   nome       TEXT NOT NULL,              -- ex: "Plantão 12h"
   tipo       tipo_atendimento NOT NULL,
@@ -91,12 +93,20 @@ CREATE TABLE IF NOT EXISTS public.categorias (
 
 ALTER TABLE public.categorias ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "authenticated_full_access"
+-- Usuários podem ver categorias globais (user_id IS NULL) ou as suas próprias
+CREATE POLICY "users_see_own_and_global_categories"
+  ON public.categorias
+  FOR SELECT
+  TO authenticated
+  USING (user_id IS NULL OR auth.uid() = user_id);
+
+-- Usuários podem gerenciar apenas as suas próprias categorias
+CREATE POLICY "users_manage_own_categories"
   ON public.categorias
   FOR ALL
   TO authenticated
-  USING (true)
-  WITH CHECK (true);
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- Categorias padrão
 INSERT INTO public.categorias (nome, tipo, tempo, ordem) VALUES
@@ -120,6 +130,7 @@ DROP VIEW IF EXISTS public.atendimentos_view;
 CREATE VIEW public.atendimentos_view AS
 SELECT
   id,
+  user_id,
   created_at,
   data_atendimento,
   tipo,

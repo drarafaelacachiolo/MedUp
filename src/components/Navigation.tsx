@@ -116,14 +116,22 @@ function NavigationInner({ userName }: NavigationProps) {
 
         {/* Profile + Logout */}
         <div style={{ padding: '14px 16px', borderTop: '1px solid #E5E1DB' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', minWidth: 0 }}>
             <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#1C4E80', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
               </svg>
             </div>
-            <div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#1A1816' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <p style={{ 
+                fontFamily: 'Inter, sans-serif', 
+                fontSize: '13px', 
+                fontWeight: 600, 
+                color: '#1A1816',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>
                 {userName ?? 'Usuário'}
               </p>
               <button
@@ -151,10 +159,9 @@ function NavigationInner({ userName }: NavigationProps) {
         </div>
       </aside>
 
-      {/* ── Bottom Nav (mobile) ── */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50"
-        style={{ height: '72px', backgroundColor: '#FFFFFF', borderTop: '1px solid #E5E1DB', display: 'flex', alignItems: 'center', justifyContent: 'space-around', paddingBottom: '4px' }}
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around"
+        style={{ height: '72px', backgroundColor: '#FFFFFF', borderTop: '1px solid #E5E1DB', paddingBottom: '4px' }}
       >
         {BOTTOM_NAV.map(({ key, label }) => {
           const isActive = activeTab === key
