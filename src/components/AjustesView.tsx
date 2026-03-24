@@ -15,7 +15,7 @@ interface Profile {
 export default function AjustesView() {
   const router = useRouter()
   const supabase = createClient()
-  
+
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [success, setSuccess] = useState('')
@@ -158,7 +158,7 @@ export default function AjustesView() {
         <div className="flex items-center gap-2 pb-2 border-b" style={{ borderColor: '#E5E1DB' }}>
           <h3 className="text-lg font-semibold">Perfil Profissional</h3>
         </div>
-        
+
         <form onSubmit={handleUpdateProfile} className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="md:col-span-2">
             <label className="field-label">Nome Completo</label>
@@ -167,7 +167,7 @@ export default function AjustesView() {
               className="field"
               value={profile.full_name || ''}
               onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-              placeholder="Ex: Dra. Rafaela"
+              placeholder="Seu nome"
             />
           </div>
           <div>
@@ -259,9 +259,9 @@ export default function AjustesView() {
         <div className="flex items-center justify-between p-4 rounded-2xl" style={{ backgroundColor: '#F9F8F6' }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                 <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-               </svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
             </div>
             <div>
               <p className="font-semibold text-sm">Sair do dispositivo</p>
@@ -270,7 +270,7 @@ export default function AjustesView() {
           </div>
           <LogoutButton />
         </div>
-        
+
         <p className="text-center text-[10px] text-gray-400 mt-10">
           MedUp v1.0.0 • Desenvolvido com carinho para Rafaela
         </p>

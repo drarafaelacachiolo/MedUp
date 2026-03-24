@@ -82,7 +82,7 @@ function NavigationInner({ userName }: NavigationProps) {
         style={{ width: '240px', height: '100vh', position: 'sticky', top: 0, backgroundColor: '#FFFFFF', borderRight: '1px solid #E5E1DB' }}
       >
         {/* Logo */}
-        <div style={{ padding: '18px 20px 16px', borderBottom: '1px solid #E5E1DB' }}>
+        <div style={{ height: '56px', display: 'flex', alignItems: 'center', padding: '0 20px', borderBottom: '1px solid #E5E1DB' }}>
           <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '20px', fontWeight: 700, color: '#1C4E80', letterSpacing: '-0.3px' }}>
             MedUp
           </span>

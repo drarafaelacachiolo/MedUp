@@ -115,12 +115,15 @@
   }
 
   /* Inputs não fazem zoom no iOS */
-  input, select, textarea {
+  input,
+  select,
+  textarea {
     font-size: 16px;
   }
 }
 
 @layer components {
+
   /* Campo de formulário padrão */
   .field {
     @apply w-full rounded-lg border px-4 py-2.5 text-base outline-none transition-all;
@@ -129,9 +132,11 @@
     border-color: #E5E1DB;
     min-height: 44px;
   }
+
   .field::placeholder {
     color: hsl(var(--muted-foreground));
   }
+
   .field:focus {
     border-color: hsl(var(--ring));
     box-shadow: 0 0 0 3px hsl(var(--ring) / 0.2);
@@ -146,25 +151,23 @@
 
   /* Botão primário */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base
-           font-medium transition-colors min-h-[48px]
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base font-medium transition-colors min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed;
     background-color: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
   }
+
   .btn-primary:hover:not(:disabled) {
     background-color: hsl(var(--primary) / 0.85);
   }
 
   /* Botão secundário */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base
-           font-medium transition-colors min-h-[48px]
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base font-medium transition-colors min-h-[48px] disabled:opacity-50 disabled:cursor-not-allowed;
     color: hsl(var(--secondary-foreground));
     border: 1px solid hsl(var(--border));
     background-color: hsl(var(--secondary));
   }
+
   .btn-secondary:hover:not(:disabled) {
     background-color: hsl(var(--muted));
   }

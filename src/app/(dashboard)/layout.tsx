@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Navigation from '@/components/Navigation'
+import DesktopHeader from '@/components/DesktopHeader'
 
 export default async function DashboardLayout({
   children,
@@ -47,6 +48,9 @@ export default async function DashboardLayout({
             </svg>
           </a>
         </header>
+        
+        {/* Header Desktop (Linha contínua) */}
+        <DesktopHeader />
 
         {/* Conteúdo */}
         <main
