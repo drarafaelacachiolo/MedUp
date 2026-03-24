@@ -11,10 +11,17 @@ export default async function DashboardLayout({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // Busca o nome real no perfil
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name')
+    .eq('id', user?.id)
+    .single()
+
   const emailPrefix = user.email?.split('@')[0] ?? ''
-  const userName = emailPrefix
+  const userName = profile?.full_name || (emailPrefix
     ? emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1)
-    : 'Usuário'
+    : 'Usuário')
 
   return (
     <div className="flex" style={{ minHeight: '100svh' }}>
