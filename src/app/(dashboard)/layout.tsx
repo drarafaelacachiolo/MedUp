@@ -1,53 +1,54 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import LogoutButton from './LogoutButton'
+import Navigation from '@/components/Navigation'
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  // Segunda camada de proteção (além do middleware)
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const userName =
+    user.user_metadata?.full_name ||
+    user.user_metadata?.name ||
+    user.email?.split('@')[0] ||
+    'Usuário'
+
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--surface-base)' }}>
-      {/* Header */}
-      <header
-        className="h-14 flex items-center justify-between px-4 sm:px-6 shrink-0"
-        style={{ backgroundColor: 'var(--surface-card)', borderBottom: '1px solid var(--border)' }}
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className="flex items-center justify-center w-8 h-8 rounded-lg"
-            style={{ backgroundColor: 'var(--wine)', color: '#fff' }}
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <span
-            className="text-xl font-semibold tracking-tight"
-            style={{
-              fontFamily: 'var(--font-display), "Cormorant Garamond", Georgia, serif',
-              color: 'var(--wine)',
-              letterSpacing: '-0.01em',
-            }}
-          >
+    <div className="flex" style={{ minHeight: '100svh' }}>
+      {/* Sidebar (desktop) — renderizada pelo Navigation */}
+      <Navigation userName={userName} />
+
+      {/* Área principal */}
+      <div className="flex flex-col flex-1 min-w-0" style={{ minHeight: '100svh' }}>
+        {/* Header mobile */}
+        <header
+          className="md:hidden flex items-center justify-between px-4 flex-shrink-0"
+          style={{ height: '56px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E5E1DB' }}
+        >
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: 700, color: '#1C4E80', letterSpacing: '-0.3px' }}>
             MedUp
           </span>
-        </div>
+          <div
+            style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#1C4E80', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+        </header>
 
-        <LogoutButton />
-      </header>
-
-      {/* Conteúdo + tabs (gerenciado pelo TabShell no page.tsx) */}
-      <div className="flex-1 flex flex-col min-h-0">
-        {children}
+        {/* Conteúdo */}
+        <main
+          className="flex-1 overflow-y-auto"
+          style={{ paddingBottom: '72px' }}
+        >
+          <style>{`@media (min-width: 768px) { main { padding-bottom: 0 !important; } }`}</style>
+          {children}
+        </main>
       </div>
     </div>
   )

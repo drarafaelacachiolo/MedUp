@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import SummaryCards from './SummaryCards'
 import DashboardClient from './DashboardClient'
 import type { AtendimentoWithStatus } from '@/types/database'
-import { currentMonthValue } from '@/lib/utils'
+import { currentMonthValue, daysOverdue } from '@/lib/utils'
 
 export default async function DashboardView() {
   const supabase = await createClient()
@@ -28,7 +28,7 @@ export default async function DashboardView() {
   // Calcular resumos no servidor
   const pendentes = atendimentos.filter((a) => a.status === 'Pendente')
   const totalPendente = pendentes.reduce((sum, a) => sum + (a.valor_a_receber ?? 0), 0)
-  const qtdPendente = pendentes.length
+  const qtdAtrasados = pendentes.filter((a) => daysOverdue(a.data_prevista_pagamento, a.status) > 0).length
 
   const mesAtual = currentMonthValue()
   const recebidosMes = atendimentos.filter(
@@ -38,17 +38,14 @@ export default async function DashboardView() {
   )
   const totalRecebidoMes = recebidosMes.reduce((sum, a) => sum + (a.valor_recebido ?? 0), 0)
 
-  // Nome curto do mês atual (ex: "março")
   const mesNome = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(new Date())
 
   return (
     <div className="p-4 sm:p-6">
-      <h2 className="section-title mb-5">Dashboard</h2>
-
       <SummaryCards
         totalPendente={totalPendente}
         totalRecebidoMes={totalRecebidoMes}
-        qtdPendente={qtdPendente}
+        qtdAtrasados={qtdAtrasados}
         mesNome={mesNome}
       />
 

@@ -2,79 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* ===== MedUp — Sistema de Design ===== */
-
-  /* Marca — vinho */
-  --wine:        #5B2D45;
-  --wine-mid:    #7A3D5C;
-  --wine-light:  #9A5070;
-
-  /* Acento — malva e blush */
-  --mauve:       #B5747D;
-  --blush:       #D8B8B0;
-  --blush-light: #EDD8D3;
-
-  /* Semântico — pendente (âmbar) */
-  --amber:       #C4752A;
-  --amber-light: #D98A3C;
-
-  /* Semântico — recebido (sálvia) */
-  --forest:      #5A7A5C;
-  --forest-light: #7A9E7C;
-
-  /* Semântico — atrasado (rosa-vinho) */
-  --overdue:     #9B1D3E;
-  --overdue-mid: #C0405E;
-
-  /* Superfícies — base creme */
-  --surface-base:  #F7EFE9;
-  --surface-card:  #FDFAF8;
-  --surface-input: #F2E8E3;
-
-  /* Compatibilidade (componentes usam --teal, --ivory) */
-  --teal:        #5B2D45;
-  --teal-mid:    #7A3D5C;
-  --teal-light:  #9A5070;
-  --ivory:       #EFE3DC;
-  --ivory-mid:   #E6D5CB;
-  --ivory-dark:  #D4BDB2;
-
-  /* Texto — quentes, derivados do vinho */
-  --ink:         #26101C;
-  --ink-mid:     #5C3749;
-  --ink-light:   #8B6575;
-  --ink-faint:   #B8909F;
-
-  /* Bordas — rgba derivado do vinho */
-  --border:        rgba(91, 45, 69, 0.12);
-  --border-mid:    rgba(91, 45, 69, 0.22);
-  --border-strong: rgba(91, 45, 69, 0.40);
-}
-
 @layer base {
+  :root {
+    --background: 48 33.3333% 97.0588%;
+    --foreground: 223.8136 0.0000% 3.9388%;
+    --card: 48 33.3333% 97.0588%;
+    --card-foreground: 223.8136 0.0000% 3.9388%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 50.7692 19.4030% 13.1373%;
+    --primary: 214.9932 22.5930% 64.5044%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 212.7183 29.9127% 84.0160%;
+    --secondary-foreground: 215.2915 27.9312% 26.8494%;
+    --muted: 20.0031 6.8725% 89.9826%;
+    --muted-foreground: 25.0184 5.9005% 44.6376%;
+    --accent: 46.1538 22.8070% 88.8235%;
+    --accent-foreground: 230 18.1818% 12.9412%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 24.0058 6.6869% 82.9784%;
+    --input: 223.8136 0.0001% 89.8161%;
+    --ring: 215.3832 18.3663% 47.0286%;
+    --chart-1: 211.6316 106.8326% 78.5620%;
+    --chart-2: 252.8128 109.6412% 85.8776%;
+    --chart-3: 46.1538 28.2609% 81.9608%;
+    --chart-4: 214.9932 22.5930% 64.5044%;
+    --chart-5: 198.4363 149.1975% 32.8976%;
+    --sidebar: 51.4286 25.9259% 94.7059%;
+    --sidebar-foreground: 11.9996 7.2269% 15.0731%;
+    --sidebar-primary: 215.3832 18.3663% 47.0286%;
+    --sidebar-primary-foreground: 0 0% 98.4314%;
+    --sidebar-accent: 46.1538 22.8070% 88.8235%;
+    --sidebar-accent-foreground: 0 0% 20.3922%;
+    --sidebar-border: 212.7183 29.9127% 84.0160%;
+    --sidebar-ring: 214.9932 22.5930% 64.5044%;
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --radius: 0.5rem;
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
+    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  }
+
+  .dark {
+    --background: 60 2.7027% 14.5098%;
+    --foreground: 46.1538 9.7744% 73.9216%;
+    --card: 60 2.7027% 14.5098%;
+    --card-foreground: 48 33.3333% 97.0588%;
+    --popover: 60 2.1277% 18.4314%;
+    --popover-foreground: 60 5.4545% 89.2157%;
+    --primary: 200.5658 97.8745% 85.9432%;
+    --primary-foreground: 223.8136 0.0000% 3.9388%;
+    --secondary: 48 33.3333% 97.0588%;
+    --secondary-foreground: 60 2.1277% 18.4314%;
+    --muted: 60 3.8462% 10.1961%;
+    --muted-foreground: 51.4286 8.8608% 69.0196%;
+    --accent: 48 10.6383% 9.2157%;
+    --accent-foreground: 51.4286 25.9259% 94.7059%;
+    --destructive: 0 84.2365% 60.1961%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 60 5.0847% 23.1373%;
+    --input: 52.5000 5.1282% 30.5882%;
+    --ring: 212.7183 29.9127% 84.0160%;
+    --chart-1: 194.1535 130.0850% 43.6488%;
+    --chart-2: 252.8128 109.6412% 85.8776%;
+    --chart-3: 20.0031 6.8725% 89.9826%;
+    --chart-4: 215.3832 18.3663% 47.0286%;
+    --chart-5: 185.1090 96.4326% 90.2904%;
+    --sidebar: 30 3.3333% 11.7647%;
+    --sidebar-foreground: 46.1538 9.7744% 73.9216%;
+    --sidebar-primary: 0 0% 20.3922%;
+    --sidebar-primary-foreground: 0 0% 98.4314%;
+    --sidebar-accent: 60 3.4483% 5.6863%;
+    --sidebar-accent-foreground: 46.1538 9.7744% 73.9216%;
+    --sidebar-border: 0 0% 92.1569%;
+    --sidebar-ring: 0 0% 70.9804%;
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --radius: 0.5rem;
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 1px 2px -1px hsl(0 0% 0% / 0.10);
+    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 2px 4px -1px hsl(0 0% 0% / 0.10);
+    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 4px 6px -1px hsl(0 0% 0% / 0.10);
+    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.10), 0 8px 10px -1px hsl(0 0% 0% / 0.10);
+    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   html {
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;
   }
 
-  body {
-    background-color: var(--surface-base);
-    color: var(--ink);
-    font-family: var(--font-sans), 'Jost', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1, h2, h3 {
-    font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
-    letter-spacing: -0.01em;
-  }
-
   /* Inputs não fazem zoom no iOS */
   input, select, textarea {
     font-size: 16px;
-    font-family: var(--font-sans), 'Jost', system-ui, sans-serif;
   }
 }
 
@@ -82,40 +124,36 @@
   /* Campo de formulário padrão */
   .field {
     @apply w-full rounded-lg border px-4 py-3 text-base outline-none transition-colors;
-    background-color: var(--surface-input);
-    color: var(--ink);
-    border-color: var(--border-mid);
+    background-color: hsl(var(--input));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
     min-height: 48px;
   }
   .field::placeholder {
-    color: var(--ink-faint);
+    color: hsl(var(--muted-foreground));
   }
   .field:focus {
-    border-color: var(--wine-light);
-    box-shadow: 0 0 0 3px rgba(154, 80, 112, 0.15);
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.2);
     outline: none;
   }
 
   /* Label de formulário */
   .field-label {
     @apply block text-sm font-medium mb-1.5;
-    color: var(--ink-mid);
+    color: hsl(var(--foreground));
   }
 
   /* Botão primário */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base
-           font-medium text-white transition-colors min-h-[48px]
+           font-medium transition-colors min-h-[48px]
            disabled:opacity-50 disabled:cursor-not-allowed;
-    background-color: var(--wine);
-    font-family: var(--font-sans), 'Jost', sans-serif;
-    letter-spacing: 0.01em;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
   }
   .btn-primary:hover:not(:disabled) {
-    background-color: var(--wine-mid);
-  }
-  .btn-primary:active:not(:disabled) {
-    background-color: var(--wine);
+    background-color: hsl(var(--primary) / 0.85);
   }
 
   /* Botão secundário */
@@ -123,20 +161,20 @@
     @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-base
            font-medium transition-colors min-h-[48px]
            disabled:opacity-50 disabled:cursor-not-allowed;
-    color: var(--ink-mid);
-    border: 1px solid var(--border-mid);
-    background-color: var(--surface-card);
-    font-family: var(--font-sans), 'Jost', sans-serif;
+    color: hsl(var(--secondary-foreground));
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--secondary));
   }
   .btn-secondary:hover:not(:disabled) {
-    background-color: var(--ivory-mid);
+    background-color: hsl(var(--muted));
   }
 
   /* Card */
   .card {
     @apply rounded-xl p-6;
-    background-color: var(--surface-card);
-    border: 1px solid var(--border);
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--card-foreground));
   }
 
   /* Badge — pendente */
@@ -149,23 +187,22 @@
   /* Badge — recebido */
   .badge-received {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
-    background-color: #E0EDE2;
-    color: #3D5E3F;
+    background-color: #3D5E3F;
+    color: #FFFFFF;
   }
 
   /* Badge — atrasado */
   .badge-overdue {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
-    background-color: #F8E5EB;
-    color: #9B1D3E;
+    background-color: #9B1D3E;
+    color: #FFFFFF;
   }
 
-  /* Título de seção com tipografia de exibição */
+  /* Título de seção */
   .section-title {
-    font-family: var(--font-display), 'Cormorant Garamond', Georgia, serif;
     font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: -0.01em;
-    color: var(--ink);
+    color: hsl(var(--foreground));
   }
 }
