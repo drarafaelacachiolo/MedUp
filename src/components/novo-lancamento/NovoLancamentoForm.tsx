@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { todayString } from '@/lib/utils'
 import type { TipoAtendimento, Categoria } from '@/types/database'
+import Spinner from '@/components/ui/Spinner'
 
 const emptyForm = {
   data_atendimento: todayString(),
@@ -192,10 +193,7 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
             <label className="field-label">Tipo de Atendimento *</label>
             {loadingCategorias ? (
               <div className="field flex items-center" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                </svg>
+                <Spinner className="mr-2" />
                 Carregando...
               </div>
             ) : (
@@ -413,10 +411,7 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           >
             {loading ? (
               <>
-                <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                </svg>
+                <Spinner size="md" className="mr-3" />
                 Processando...
               </>
             ) : (

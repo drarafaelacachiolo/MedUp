@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { AtendimentoWithStatus, TipoAtendimento, Categoria, EditAtendimentoInput } from '@/types/database'
+import Spinner from '@/components/ui/Spinner'
 
 interface EditModalProps {
   item: AtendimentoWithStatus
@@ -149,10 +150,7 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             <label className="field-label">Tipo de Atendimento *</label>
             {loadingCats ? (
               <div className="field flex items-center" style={{ color: 'hsl(var(--muted-foreground))' }}>
-                <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                </svg>
+                <Spinner className="mr-2" />
                 Carregando...
               </div>
             ) : (
@@ -303,10 +301,7 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             >
               {isLoading ? (
                 <>
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
-                  </svg>
+                  <Spinner />
                   Salvando...
                 </>
               ) : (
