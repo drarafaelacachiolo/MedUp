@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { AtendimentoWithStatus, TipoAtendimento, Categoria, EditAtendimentoInput } from '@/types/database'
 
@@ -30,6 +30,12 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
     valor_recebido:          item.valor_recebido != null ? String(item.valor_recebido) : '',
     banco:                   item.banco ?? '',
   })
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   useEffect(() => {
     const supabase = createClient()

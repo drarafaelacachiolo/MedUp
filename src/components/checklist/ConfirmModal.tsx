@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { formatCurrency, formatDate, todayString } from '@/lib/utils'
 import type { AtendimentoWithStatus, ConfirmReceiptInput } from '@/types/database'
 
@@ -21,6 +21,12 @@ export default function ConfirmModal({
   const [valorRecebido, setValorRecebido] = useState(String(item.valor_a_receber))
   const [banco, setBanco] = useState('')
   const [fieldError, setFieldError] = useState('')
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
