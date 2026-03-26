@@ -14,7 +14,7 @@ import type {
   ConfirmReceiptInput,
   EditAtendimentoInput,
 } from '@/types/database'
-import { currentMonthValue } from '@/lib/utils'
+import { currentMonthValue, formatCurrency, formatDate } from '@/lib/utils'
 
 type FilterStatus = 'Todos' | StatusAtendimento
 type FilterTipo = 'Todos' | TipoAtendimento
@@ -35,6 +35,7 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('Todos')
   const [monthFilter, setMonthFilter] = useState<string>(currentMonthValue())
   const [tipoFilter, setTipoFilter] = useState<FilterTipo>('Todos')
+  const [searchQuery, setSearchQuery] = useState('')
   const [editingItem, setEditingItem] = useState<AtendimentoWithStatus | null>(null)
   const [confirmingItem, setConfirmingItem] = useState<AtendimentoWithStatus | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -46,6 +47,24 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
     if (monthFilter) {
       const mes = a.data_atendimento.slice(0, 7)
       if (mes !== monthFilter) return false
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      const normalize = (s?: string | null) =>
+        (s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      const haystack = [
+        normalize(a.paciente),
+        normalize(a.local),
+        normalize(a.tipo),
+        normalize(a.banco),
+        normalize(a.observacoes),
+        normalize(formatDate(a.data_atendimento)),
+        normalize(formatDate(a.data_prevista_pagamento)),
+        a.data_recebimento ? normalize(formatDate(a.data_recebimento)) : '',
+        normalize(formatCurrency(a.valor_a_receber)),
+        a.valor_recebido != null ? normalize(formatCurrency(a.valor_recebido)) : '',
+      ].join(' ')
+      if (!haystack.includes(q)) return false
     }
     return true
   })
@@ -162,8 +181,10 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
       <FilterBar
         status={statusFilter}
         month={monthFilter}
+        search={searchQuery}
         onStatusChange={setStatusFilter}
         onMonthChange={setMonthFilter}
+        onSearchChange={setSearchQuery}
       />
 
       <p className="text-xs mb-3" style={{ color: 'hsl(var(--muted-foreground))' }}>

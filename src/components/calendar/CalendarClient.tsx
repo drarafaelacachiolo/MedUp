@@ -100,11 +100,12 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
     })
   }, [atendimentos, filterMode])
 
-  // Sempre plotado em data_atendimento — sem duplicatas
+  // Plotado na data financeira relevante — sem duplicatas
+  // Recebido → data_recebimento | Pendente/Atrasado → data_prevista_pagamento
   const eventsByDate = useMemo(() => {
     const map = new Map<string, AtendimentoWithStatus[]>()
     for (const a of filteredAtendimentos) {
-      const date = a.data_atendimento
+      const date = a.status === 'Recebido' ? a.data_recebimento : a.data_prevista_pagamento
       if (!date) continue
       const list = map.get(date) ?? []
       list.push(a)
@@ -118,11 +119,12 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
     [selectedDay, eventsByDate]
   )
 
-  // Resumo do mês visível
+  // Resumo do mês visível — baseado na data financeira relevante do mês
   const monthStats = useMemo(() => {
-    const monthItems = atendimentos.filter(a =>
-      a.data_atendimento?.startsWith(currentMonth)
-    )
+    const monthItems = atendimentos.filter(a => {
+      const date = a.status === 'Recebido' ? a.data_recebimento : a.data_prevista_pagamento
+      return date?.startsWith(currentMonth)
+    })
     const aReceber = monthItems
       .filter(a => a.status !== 'Recebido')
       .reduce((sum, a) => sum + (a.valor_a_receber ?? 0), 0)
@@ -496,7 +498,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                             <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '13px', color: '#1A1816' }} className="truncate">{ev.local}</p>
                           )}
                           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#A8A09A', marginTop: '2px' }}>
-                            {ev.tipo} · {ev.tempo}
+                            {ev.tipo} · {ev.tempo} · trabalhado em {formatDate(ev.data_atendimento)}
                           </p>
                           {ev.observacoes && (
                             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#C0B8B0', fontStyle: 'italic', marginTop: '4px' }}>{ev.observacoes}</p>
