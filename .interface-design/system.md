@@ -20,84 +20,82 @@
 
 ## Palette
 
-### Brand — Vinho
+### Brand — Navy Blue (primário atual)
 ```
---wine:       #5B2D45   ← primário (botões, logo, destaque)
---wine-mid:   #7A3D5C   ← hover de botões primários
---wine-light: #9A5070   ← focus rings, acentos leves
+#1C4E80   ← primário (navegação ativa, logo, avatar)
+#EEF4FB   ← fundo do item ativo na sidebar
 ```
 
-### Accent — Malva e Blush
+### CSS Variables (globals.css)
 ```
---mauve:       #B5747D   ← acento secundário
---blush:       #D8B8B0   ← bordas suaves, backgrounds de hover
---blush-light: #EDD8D3   ← tints muito sutis
+--primary:    214.9932 22.5930% 64.5044%  ← azul acinzentado médio (~#7B9AB8)
+--secondary:  212.7183 29.9127% 84.0160%  ← azul claro (~#B8CDD9)
+--ring:       215.4 18.4% 47%             ← azul médio (~#647E94) — focus ring
+--background: 48 33.3333% 97.0588%        ← creme quente (~#FAF8F5)
+--card:       igual ao background
+--accent:     46.1538 22.8070% 88.8235%   ← bege quente
+--muted:      20.0031 6.8725% 89.9826%    ← cinza quente claro
+--border:     24.0058 6.6869% 82.9784%    ← cinza quente (≈ #E5E1DB)
+```
+
+### Cores hardcoded na Navegação
+```
+Sidebar ativo bg:    #EEF4FB
+Sidebar ativo color: #1C4E80
+Sidebar inativo:     #7A756E
+Bottom nav inativo:  #A8A09A
+Surface/header:      #FFFFFF
+Border:              #E5E1DB
 ```
 
 ### Semântico — Pendente (Âmbar)
 ```
---amber:       #C4752A
---amber-light: #D98A3C
-badge-pending bg:  #FEE9CC  color: #8A500A
+badge-pending bg:       #FEE9CC   color: #8A500A
+borda esquerda:         #d97706
 ```
 
 ### Semântico — Recebido (Sálvia)
 ```
---forest:       #5A7A5C
---forest-light: #7A9E7C
-badge-received bg: #E0EDE2  color: #3D5E3F
+badge-received bg:      #3D5E3F   color: #FFFFFF
+borda esquerda:         #5A7B5C
 ```
 
-### Semântico — Atrasado (Rosa-Vinho) ← SIGNATURE
+### Semântico — Atrasado (Vinho-Rosa) ← SIGNATURE
 ```
---overdue:     #9B1D3E
---overdue-mid: #C0405E
-badge-overdue bg:  #F8E5EB  color: #9B1D3E
-card bg atrasado:  #FAF4F6
+badge-overdue bg:       #9B1D3E   color: #FFFFFF
+borda esquerda:         #9B2040
+row bg:                 #FAF4F6
 ```
 
 ### Superfícies
 ```
---surface-base:  #F7EFE9   ← base da página (creme aquecido)
---surface-card:  #FDFAF8   ← cards (quase branco, quente)
---surface-input: #F2E8E3   ← fundo de inputs (levemente mais escuro)
+Fundo da página:  hsl(var(--background)) ≈ #FAF8F5 (creme aquecido)
+Cards:            hsl(var(--card)) — igual ao fundo
+Inputs:           #FFFFFF
+Borders:          #E5E1DB (hardcoded) / hsl(var(--border))
 ```
 
 ### Texto
 ```
---ink:       #26101C   ← texto principal (quase preto vinhoso)
---ink-mid:   #5C3749   ← texto secundário
---ink-light: #8B6575   ← labels, metadados
---ink-faint: #B8909F   ← placeholders, desabilitados
-```
-
-### Bordas (rgba derivado do vinho)
-```
---border:        rgba(91, 45, 69, 0.12)
---border-mid:    rgba(91, 45, 69, 0.22)
---border-strong: rgba(91, 45, 69, 0.40)
+Principal:          hsl(var(--foreground)) ≈ quase preto
+Secundário/labels:  hsl(var(--muted-foreground))
+Nav nome usuário:   #1A1816
+Nav secundário:     #7A756E
 ```
 
 ---
 
 ## Typography
 
-| Role | Font | Weights |
+**Fontes carregadas:** sistema (sem Google Fonts no layout.tsx)
+
+| Role | Font | Onde |
 |---|---|---|
-| Display / Títulos | Cormorant Garamond | 400, 500, 600, 700 |
-| Body / UI | Jost | 300, 400, 500, 600 |
-| Números / Tabela | Jost tabular-nums | 400, 600 |
+| UI / navegação | Inter, sans-serif (hardcoded) | Navigation, labels de nav |
+| Body geral | var(--font-sans) — system sans | Componentes via Tailwind |
+| Títulos / seções | var(--font-serif) — ui-serif, Georgia | Cabeçalhos de modal, painel detalhe |
 
-**CSS vars:**
-```
---font-display: (next/font/google Cormorant_Garamond)
---font-sans:    (next/font/google Jost)
-```
-
-**Usage:**
-- `h1`, `h2`, `h3`, `.section-title` → `font-family: var(--font-display)`
-- Corpo, labels, botões, inputs → `font-family: var(--font-sans)`
-- Valores monetários → tabular-nums em Jost
+**Nota:** O design original previa Cormorant Garamond + Jost. O código atual usa Inter hardcoded na navegação e fonts do sistema nos demais componentes. Se quiser voltar à tipografia original, requer adicionar Google Fonts no layout.tsx.
 
 ---
 
@@ -105,10 +103,10 @@ card bg atrasado:  #FAF4F6
 
 **Border-only** — limpo, adequado para ferramenta pessoal.
 
-- Não usar sombras decorativas
-- Elevation via cor de superfície (surface-card é levemente mais claro que surface-base)
-- Cards: `border: 1px solid var(--border)` + `background: var(--surface-card)`
-- Bordas são rgba, não hex — se misturam sutilmente com o fundo
+- Sem sombras decorativas
+- Elevation via cor de superfície
+- Cards: `border: 1px solid #E5E1DB` ou `border: 1px solid hsl(var(--border))`
+- Inputs: fundo `#FFFFFF`, borda `#E5E1DB`
 
 ---
 
@@ -120,39 +118,60 @@ card bg atrasado:  #FAF4F6
 
 ## Component Patterns
 
-### Badge de tipo de atendimento
-```
-Plantão: bg #F3ECF0  color #5B2D45
-Consulta: bg #F0EBF5  color #7A3D5C
+### Badges de status
+```css
+/* .badge-pending */
+background-color: #FEE9CC;
+color: #8A500A;
+
+/* .badge-received */
+background-color: #3D5E3F;
+color: #FFFFFF;
+
+/* .badge-overdue */
+background-color: #9B1D3E;
+color: #FFFFFF;
 ```
 
 ### Borda esquerda de cards (indicador de status)
 ```
-Pendente (em dia): var(--amber)
-Pendente (atrasado): var(--overdue)
-Recebido: var(--forest)
+Pendente (em dia):  #d97706
+Pendente (atrasado): #9B2040
+Recebido:           #5A7B5C
 ```
 
-### Botão primário
+### Botão primário (.btn-primary)
 ```css
-background: var(--wine)
-hover: var(--wine-mid)
-font: var(--font-sans), letter-spacing: 0.01em
+background: hsl(var(--primary));   /* ~#7B9AB8 — azul acinzentado */
+color: hsl(var(--primary-foreground));  /* branco */
+hover: opacity 85%
+border-radius: 8px
 ```
 
-### Campo de formulário
+### Botão secundário (.btn-secondary)
 ```css
-background: var(--surface-input)
-border: var(--border-mid)
-focus border: var(--wine-light)
-focus shadow: rgba(154, 80, 112, 0.15)
+background: hsl(var(--secondary));
+border: 1px solid hsl(var(--border));
+color: hsl(var(--secondary-foreground));
+hover: hsl(var(--muted))
 ```
 
-### Abas de tipo (Todos / Plantões / Consultas)
+### Campo de formulário (.field)
+```css
+background: #FFFFFF;
+border: 1px solid #E5E1DB;
+border-radius: 8px;
+font-size: 16px;   /* evita zoom iOS */
+focus border: hsl(var(--ring));
+focus shadow: 0 0 0 3px hsl(var(--ring) / 0.2);
 ```
-Active: background var(--wine), color white
-Inactive: transparent, color var(--ink-mid)
-Container border: var(--border-mid)
+
+### Navegação sidebar (item ativo)
+```css
+backgroundColor: #EEF4FB;
+color: #1C4E80;
+fontWeight: 600;
+border-radius: 8px;
 ```
 
 ### Lógica de atrasado (SIGNATURE)
@@ -162,10 +181,27 @@ Container border: var(--border-mid)
 // isOverdue = daysOverdue(...) > 0
 
 // Quando isOverdue:
-// - Row bg: #FAF4F6
-// - Left border: var(--overdue)
-// - Badge: .badge-overdue ("Atrasado")
-// - Célula previsão: color var(--overdue) + "{N}d de atraso"
+// - Row/card bg: #FAF4F6
+// - Left border: #9B2040 (3-4px)
+// - Badge: .badge-overdue  ("Atrasado")
+// - Célula/campo previsão: color #9B1D3E + "{N}d de atraso"
+```
+
+### Chips do calendário (modo Trabalho)
+```
+Plantão:  background hsl(var(--primary))    color hsl(var(--primary-foreground))
+Consulta: background hsl(var(--secondary))  color hsl(var(--secondary-foreground))
+```
+
+### Chips do calendário (modo Recebimentos)
+```
+background: #D1EDD4   color: #2F5E34
+```
+
+### Chips do calendário (modo Previsão)
+```
+Em dia:   background #FEF3C7  color #78350F
+Atrasado: background #F5D7DF  color #7A1E35
 ```
 
 ---
@@ -174,8 +210,10 @@ Container border: var(--border-mid)
 
 | Arquivo | Papel |
 |---|---|
-| `src/app/globals.css` | CSS vars, componentes base |
-| `tailwind.config.ts` | Tokens de cor e fonte |
-| `src/app/layout.tsx` | Google Fonts (next/font) |
-| `src/lib/utils.ts` | `daysOverdue()` |
-| `src/components/dashboard/AtendimentosTable.tsx` | Lógica de atrasado |
+| `src/app/globals.css` | CSS vars, componentes base (.field, .btn-primary, badges) |
+| `tailwind.config.ts` | Tokens Tailwind (mapeia CSS vars) |
+| `src/app/layout.tsx` | Root layout — sem Google Fonts atualmente |
+| `src/lib/utils.ts` | `daysOverdue()`, `formatCurrency()`, `formatDate()` |
+| `src/components/Navigation.tsx` | Sidebar + bottom nav (cores hardcoded em #1C4E80) |
+| `src/components/dashboard/AtendimentosTable.tsx` | Lógica de atrasado na tabela |
+| `src/components/calendar/CalendarClient.tsx` | Lógica de atrasado no calendário |
