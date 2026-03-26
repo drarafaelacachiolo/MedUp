@@ -70,7 +70,10 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
 
   async function handleCriarCategoria(e: React.FormEvent) {
     e.preventDefault()
-    if (!novaCategoria.nome.trim() || !novaCategoria.tempo.trim()) return
+    if (!novaCategoria.nome.trim() || !novaCategoria.tempo.trim()) {
+      setSavingCategoria(false)
+      return
+    }
     setSavingCategoria(true)
 
     const supabase = createClient()
