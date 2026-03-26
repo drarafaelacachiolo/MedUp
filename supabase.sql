@@ -44,8 +44,9 @@ SELECT
   valor_recebido,
   banco,
   CASE
-    WHEN data_recebimento IS NULL THEN 'Pendente'::TEXT
-    ELSE 'Recebido'::TEXT
+    WHEN data_recebimento IS NOT NULL THEN 'Recebido'::TEXT
+    WHEN data_prevista_pagamento < CURRENT_DATE THEN 'Atrasado'::TEXT
+    ELSE 'Pendente'::TEXT
   END AS status
 FROM public.atendimentos;
 
@@ -144,8 +145,9 @@ SELECT
   valor_recebido,
   banco,
   CASE
-    WHEN data_recebimento IS NULL THEN 'Pendente'::TEXT
-    ELSE 'Recebido'::TEXT
+    WHEN data_recebimento IS NOT NULL THEN 'Recebido'::TEXT
+    WHEN data_prevista_pagamento < CURRENT_DATE THEN 'Atrasado'::TEXT
+    ELSE 'Pendente'::TEXT
   END AS status
 FROM public.atendimentos;
 
