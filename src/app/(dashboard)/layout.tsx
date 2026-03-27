@@ -25,12 +25,12 @@ export default async function DashboardLayout({
     : 'Usuário')
 
   return (
-    <div className="flex" style={{ minHeight: '100svh' }}>
+    <div className="flex" style={{ height: '100svh' }}>
       {/* Sidebar (desktop) — renderizada pelo Navigation */}
       <Navigation userName={userName} />
 
       {/* Área principal */}
-      <div className="flex flex-col flex-1 min-w-0" style={{ minHeight: '100svh' }}>
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Header mobile */}
         <header
           className="md:hidden flex items-center justify-between px-4 flex-shrink-0"
