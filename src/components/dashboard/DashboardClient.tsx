@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import FilterBar from './FilterBar'
@@ -37,6 +37,14 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
   const [monthFilter, setMonthFilter] = useState<string>(currentMonthValue())
   const [tipoFilter, setTipoFilter] = useState<FilterTipo>('Todos')
   const [searchQuery, setSearchQuery] = useState('')
+  const [bancoFilter, setBancoFilter] = useState('')
+
+  const bancoOptions = useMemo(() => {
+    const banks = atendimentos
+      .map(a => a.banco)
+      .filter((b): b is string => !!b && b.trim() !== '')
+    return [...new Set(banks)].sort()
+  }, [atendimentos])
   const [editingItem, setEditingItem] = useState<AtendimentoWithStatus | null>(null)
   const [confirmingItem, setConfirmingItem] = useState<AtendimentoWithStatus | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -50,6 +58,7 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
       const mes = a.data_atendimento.slice(0, 7)
       if (mes !== monthFilter) return false
     }
+    if (bancoFilter && a.banco !== bancoFilter) return false
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       const normalize = (s?: string | null) =>
@@ -187,9 +196,12 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
         status={statusFilter}
         month={monthFilter}
         search={searchQuery}
+        banco={bancoFilter}
+        bancoOptions={bancoOptions}
         onStatusChange={setStatusFilter}
         onMonthChange={setMonthFilter}
         onSearchChange={setSearchQuery}
+        onBancoChange={setBancoFilter}
       />
 
       <p className="text-xs mb-3" style={{ color: 'hsl(var(--muted-foreground))' }}>

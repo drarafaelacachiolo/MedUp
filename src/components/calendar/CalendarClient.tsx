@@ -83,6 +83,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
   const [currentMonth, setCurrentMonth] = useState(currentYM)
   const [filterMode, setFilterMode] = useState<FilterMode>('todos')
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [calSearch, setCalSearch] = useState('')
   const [editingItem, setEditingItem] = useState<AtendimentoWithStatus | null>(null)
   const [confirmingItem, setConfirmingItem] = useState<AtendimentoWithStatus | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -93,14 +94,24 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
 
   const filteredAtendimentos = useMemo(() => {
     return atendimentos.filter(item => {
-      if (filterMode === 'todos') return true
-      const s = getItemStatus(item)
-      if (filterMode === 'recebidos') return s === 'recebido'
-      if (filterMode === 'atrasados') return s === 'atrasado'
-      if (filterMode === 'pendentes') return s === 'pendente'
+      // Status filter
+      if (filterMode !== 'todos') {
+        const s = getItemStatus(item)
+        if (filterMode === 'recebidos' && s !== 'recebido') return false
+        if (filterMode === 'atrasados' && s !== 'atrasado') return false
+        if (filterMode === 'pendentes' && s !== 'pendente') return false
+      }
+      // Search filter
+      if (calSearch.trim()) {
+        const q = calSearch.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        const norm = (s?: string | null) =>
+          (s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        const hay = [norm(item.paciente), norm(item.local), norm(item.tipo), norm(item.banco), norm(item.observacoes)].join(' ')
+        if (!hay.includes(q)) return false
+      }
       return true
     })
-  }, [atendimentos, filterMode])
+  }, [atendimentos, filterMode, calSearch])
 
   // Plotado na data financeira relevante — sem duplicatas
   // Recebido → data_recebimento | Pendente/Atrasado → data_prevista_pagamento
@@ -197,6 +208,39 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
 
   return (
     <div style={{ maxWidth: '860px', margin: '0 auto', padding: '20px 20px 32px' }}>
+
+      {/* Campo de busca */}
+      <div className="relative mb-3">
+        <svg
+          width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#A8A09A', pointerEvents: 'none' }}
+        >
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          placeholder="Buscar por paciente, local, banco..."
+          value={calSearch}
+          onChange={e => { setCalSearch(e.target.value); setSelectedDay(null) }}
+          style={{
+            width: '100%', paddingLeft: '36px', paddingRight: calSearch ? '36px' : '14px',
+            height: '38px', fontSize: '13px', fontFamily: 'Inter, sans-serif',
+            borderRadius: '8px', border: '1px solid #E5E1DB', backgroundColor: '#FFFFFF',
+            outline: 'none', color: '#1A1816', boxSizing: 'border-box',
+          }}
+        />
+        {calSearch && (
+          <button
+            onClick={() => { setCalSearch(''); setSelectedDay(null) }}
+            style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', color: '#A8A09A', background: 'none', border: 'none', cursor: 'pointer', padding: '2px' }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        )}
+      </div>
 
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -425,14 +469,34 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
             className="flex items-center justify-between px-4 sm:px-5 py-3"
             style={{ borderBottom: '1px solid #E5E1DB', backgroundColor: 'hsl(var(--muted))' }}
           >
-            <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '14px', color: '#1A1816' }}>
-              {formatDate(selectedDay)}
-              {dayEvents.length > 0 && (
-                <span style={{ marginLeft: '8px', fontWeight: 400, fontSize: '13px', color: '#7A756E' }}>
-                  {dayEvents.length} registro{dayEvents.length !== 1 ? 's' : ''}
-                </span>
-              )}
-            </h3>
+            <div>
+              <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '14px', color: '#1A1816' }}>
+                {formatDate(selectedDay)}
+                {dayEvents.length > 0 && (
+                  <span style={{ marginLeft: '8px', fontWeight: 400, fontSize: '13px', color: '#7A756E' }}>
+                    {dayEvents.length} registro{dayEvents.length !== 1 ? 's' : ''}
+                  </span>
+                )}
+              </h3>
+              {dayEvents.length > 0 && (() => {
+                const totalPendente = dayEvents.filter(ev => ev.status !== 'Recebido').reduce((s, ev) => s + (ev.valor_a_receber ?? 0), 0)
+                const totalRecebido = dayEvents.filter(ev => ev.status === 'Recebido').reduce((s, ev) => s + (ev.valor_recebido ?? 0), 0)
+                return (
+                  <div className="flex flex-wrap gap-3 mt-0.5" style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px' }}>
+                    {totalPendente > 0 && (
+                      <span style={{ color: '#7A756E' }}>
+                        A receber: <strong style={{ color: '#8A500A' }}>{formatCurrency(totalPendente)}</strong>
+                      </span>
+                    )}
+                    {totalRecebido > 0 && (
+                      <span style={{ color: '#7A756E' }}>
+                        Recebido: <strong style={{ color: '#3D5E3F' }}>{formatCurrency(totalRecebido)}</strong>
+                      </span>
+                    )}
+                  </div>
+                )
+              })()}
+            </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => router.push(`/?tab=novo&date=${selectedDay}`)}

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { AtendimentoWithStatus, TipoAtendimento, Categoria, EditAtendimentoInput } from '@/types/database'
 import Spinner from '@/components/ui/Spinner'
+import SmartDateInput from '@/components/ui/SmartDateInput'
 
 interface EditModalProps {
   item: AtendimentoWithStatus
@@ -137,12 +138,10 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="field-label">Data do Atendimento *</label>
-            <input
-              type="date"
+            <SmartDateInput
               required
-              className="field"
               value={form.data_atendimento}
-              onChange={(e) => set('data_atendimento', e.target.value)}
+              onChange={(v) => set('data_atendimento', v)}
             />
           </div>
 
@@ -212,12 +211,10 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             </div>
             <div>
               <label className="field-label">Previsão de Pagamento *</label>
-              <input
-                type="date"
+              <SmartDateInput
                 required
-                className="field"
                 value={form.data_prevista_pagamento}
-                onChange={(e) => set('data_prevista_pagamento', e.target.value)}
+                onChange={(v) => set('data_prevista_pagamento', v)}
               />
             </div>
           </div>
@@ -245,11 +242,9 @@ export default function EditModal({ item, onSave, onClose, isLoading }: EditModa
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="field-label">Data que Recebeu</label>
-                <input
-                  type="date"
-                  className="field"
+                <SmartDateInput
                   value={form.data_recebimento}
-                  onChange={(e) => set('data_recebimento', e.target.value)}
+                  onChange={(v) => set('data_recebimento', v)}
                 />
               </div>
               <div>

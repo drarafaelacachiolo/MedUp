@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { todayString } from '@/lib/utils'
 import type { TipoAtendimento, Categoria } from '@/types/database'
 import Spinner from '@/components/ui/Spinner'
+import SmartDateInput from '@/components/ui/SmartDateInput'
 
 const emptyForm = {
   data_atendimento: todayString(),
@@ -54,6 +55,30 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
 
   useEffect(() => {
     fetchCategorias()
+
+    // Load banco_padrao from profile + last used values from localStorage
+    async function loadDefaults() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('banco_padrao')
+        .eq('id', user.id)
+        .single()
+
+      const savedLocal    = localStorage.getItem('cf_last_local')    ?? ''
+      const savedPaciente = localStorage.getItem('cf_last_paciente') ?? ''
+      const savedBanco    = localStorage.getItem('cf_last_banco')    ?? profile?.banco_padrao ?? ''
+
+      setForm(prev => ({
+        ...prev,
+        local:    savedLocal,
+        paciente: savedPaciente,
+        banco:    savedBanco,
+      }))
+    }
+    loadDefaults()
   }, [])
 
   function set(field: keyof typeof emptyForm, value: string) {
@@ -150,7 +175,18 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
       return
     }
 
-    setForm({ ...emptyForm, data_atendimento: todayString() })
+    // Persist last used values for next entries
+    if (form.local.trim())    localStorage.setItem('cf_last_local',    form.local.trim())
+    if (form.paciente.trim()) localStorage.setItem('cf_last_paciente', form.paciente.trim())
+    if (form.banco.trim())    localStorage.setItem('cf_last_banco',    form.banco.trim())
+
+    // Reset form but keep local and banco for convenience
+    setForm({
+      ...emptyForm,
+      data_atendimento: todayString(),
+      local: form.local,
+      banco: form.banco,
+    })
     setSuccess(true)
     setLoading(false)
     setTimeout(() => setSuccess(false), 4000)
@@ -180,12 +216,10 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
           <div>
             <label className="field-label">Data do Atendimento *</label>
-            <input
-              type="date"
+            <SmartDateInput
               required
-              className="field"
               value={form.data_atendimento}
-              onChange={(e) => set('data_atendimento', e.target.value)}
+              onChange={(v) => set('data_atendimento', v)}
             />
           </div>
 
@@ -234,7 +268,7 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
                 style={{ backgroundColor: '#F9F8F6', border: '1px solid #E5E1DB' }}
               >
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[#7A756E]">Nova Categoria</p>
-                
+
                 <div>
                   <label className="field-label !text-xs">Nome *</label>
                   <input
@@ -329,15 +363,13 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           </div>
           <div>
             <label className="field-label">Previsão de Pagamento *</label>
-            <input
-              type="date"
+            <SmartDateInput
               required
-              className="field"
               value={form.data_prevista_pagamento}
-              onChange={(e) => set('data_prevista_pagamento', e.target.value)}
+              onChange={(v) => set('data_prevista_pagamento', v)}
             />
           </div>
-          
+
           <div className="md:col-span-2">
             <label className="field-label">Observações</label>
             <textarea
@@ -361,11 +393,9 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
             <div>
               <label className="field-label">Data do Recebimento</label>
-              <input
-                type="date"
-                className="field"
+              <SmartDateInput
                 value={form.data_recebimento}
-                onChange={(e) => set('data_recebimento', e.target.value)}
+                onChange={(v) => set('data_recebimento', v)}
               />
             </div>
             <div>

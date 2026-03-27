@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { formatCurrency, formatDate, todayString } from '@/lib/utils'
 import Spinner from '@/components/ui/Spinner'
+import SmartDateInput from '@/components/ui/SmartDateInput'
+import { createClient } from '@/lib/supabase/client'
 import type { AtendimentoWithStatus, ConfirmReceiptInput } from '@/types/database'
 
 interface ConfirmModalProps {
@@ -28,6 +30,23 @@ export default function ConfirmModal({
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
+
+  // Load banco_padrao from profile as default
+  useEffect(() => {
+    async function loadBancoPadrao() {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('banco_padrao')
+        .eq('id', user.id)
+        .single()
+      const lastBanco = localStorage.getItem('cf_last_banco') ?? data?.banco_padrao ?? ''
+      if (lastBanco) setBanco(lastBanco)
+    }
+    loadBancoPadrao()
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -101,12 +120,10 @@ export default function ConfirmModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="field-label">Data que Recebeu *</label>
-            <input
-              type="date"
+            <SmartDateInput
               required
-              className="field"
               value={dataRecebimento}
-              onChange={(e) => setDataRecebimento(e.target.value)}
+              onChange={setDataRecebimento}
             />
           </div>
 

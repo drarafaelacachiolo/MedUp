@@ -6,9 +6,12 @@ interface FilterBarProps {
   status: FilterStatus
   month: string
   search: string
+  banco: string
+  bancoOptions: string[]
   onStatusChange: (s: FilterStatus) => void
   onMonthChange: (m: string) => void
   onSearchChange: (s: string) => void
+  onBancoChange: (b: string) => void
 }
 
 const STATUS_OPTIONS: { key: FilterStatus; label: string }[] = [
@@ -21,9 +24,12 @@ export default function FilterBar({
   status,
   month,
   search,
+  banco,
+  bancoOptions,
   onStatusChange,
   onMonthChange,
   onSearchChange,
+  onBancoChange,
 }: FilterBarProps) {
   return (
     <div className="flex flex-col gap-3 mb-4">
@@ -56,7 +62,7 @@ export default function FilterBar({
         )}
       </div>
 
-      {/* Filtros de status e mês */}
+      {/* Filtros de status, mês e banco */}
       <div className="flex flex-wrap items-center gap-3">
         <div
           className="flex rounded-lg overflow-hidden"
@@ -88,6 +94,20 @@ export default function FilterBar({
           value={month}
           onChange={(e) => onMonthChange(e.target.value)}
         />
+
+        {bancoOptions.length > 0 && (
+          <select
+            className="field py-2 text-sm w-auto"
+            style={{ minHeight: '40px', fontFamily: 'Inter, sans-serif', paddingRight: '32px' }}
+            value={banco}
+            onChange={(e) => onBancoChange(e.target.value)}
+          >
+            <option value="">Todos os bancos</option>
+            {bancoOptions.map((b) => (
+              <option key={b} value={b}>{b}</option>
+            ))}
+          </select>
+        )}
       </div>
     </div>
   )
