@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import FilterBar from './FilterBar'
 import AtendimentosTable from './AtendimentosTable'
 import EditModal from './EditModal'
+import DeleteModal from './DeleteModal'
 import ConfirmModal from '@/components/checklist/ConfirmModal'
 import type {
   AtendimentoWithStatus,
@@ -38,6 +39,7 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
   const [searchQuery, setSearchQuery] = useState('')
   const [editingItem, setEditingItem] = useState<AtendimentoWithStatus | null>(null)
   const [confirmingItem, setConfirmingItem] = useState<AtendimentoWithStatus | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [actionError, setActionError] = useState('')
 
@@ -125,19 +127,22 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
     setIsLoading(false)
   }
 
-  async function handleDelete(id: string) {
-    if (!window.confirm('Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.')) return
-
+  async function handleDelete() {
+    if (!deletingId) return
     setActionError('')
+    setIsLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.from('atendimentos').delete().eq('id', id)
+    const { error } = await supabase.from('atendimentos').delete().eq('id', deletingId)
+    setIsLoading(false)
 
     if (error) {
       setActionError('Erro ao excluir registro. Tente novamente.')
+      setDeletingId(null)
       return
     }
 
-    setAtendimentos((prev) => prev.filter((a) => a.id !== id))
+    setAtendimentos((prev) => prev.filter((a) => a.id !== deletingId))
+    setDeletingId(null)
   }
 
   return (
@@ -200,7 +205,7 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
       <AtendimentosTable
         atendimentos={filtered}
         onEdit={setEditingItem}
-        onDelete={handleDelete}
+        onDelete={setDeletingId}
         onConfirmPayment={setConfirmingItem}
       />
 
@@ -218,6 +223,14 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
           item={confirmingItem}
           onConfirm={handleConfirm}
           onClose={() => setConfirmingItem(null)}
+          isLoading={isLoading}
+        />
+      )}
+
+      {deletingId && (
+        <DeleteModal
+          onConfirm={handleDelete}
+          onClose={() => setDeletingId(null)}
           isLoading={isLoading}
         />
       )}
