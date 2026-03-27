@@ -81,6 +81,8 @@ export default function LoginPage() {
   const [cadastroError, setCadastroError] = useState('')
   const [cadastroSuccess, setCadastroSuccess] = useState(false)
   const [cadastroLoading, setCadastroLoading] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendSuccess, setResendSuccess] = useState(false)
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -116,6 +118,14 @@ export default function LoginPage() {
     }
   }
 
+  async function handleResendEmail() {
+    setResendLoading(true)
+    const supabase = createClient()
+    await supabase.auth.resend({ type: 'signup', email: cadastroEmail })
+    setResendLoading(false)
+    setResendSuccess(true)
+  }
+
   async function handleCadastro(e: React.FormEvent) {
     e.preventDefault()
     setCadastroError('')
@@ -129,7 +139,10 @@ export default function LoginPage() {
     const { data, error } = await supabase.auth.signUp({
       email: cadastroEmail,
       password: cadastroPassword,
-      options: { data: { full_name: cadastroNome } },
+      options: {
+        data: { full_name: cadastroNome },
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     })
     if (error) {
       setCadastroError(
@@ -292,6 +305,13 @@ export default function LoginPage() {
           <p style={{ fontSize: 13, color: '#6B7280', lineHeight: '1.5' }}>
             Enviamos um e-mail de confirmação para <strong>{cadastroEmail}</strong>. Acesse sua caixa de entrada e clique no link para ativar sua conta.
           </p>
+          <button
+            onClick={handleResendEmail}
+            disabled={resendLoading || resendSuccess}
+            style={{ fontSize: 13, color: resendSuccess ? '#3D5E3F' : '#6B7280', background: 'none', border: 'none', cursor: resendSuccess ? 'default' : 'pointer', opacity: resendLoading ? 0.6 : 1 }}
+          >
+            {resendLoading ? 'Reenviando...' : resendSuccess ? 'E-mail reenviado!' : 'Não recebeu? Reenviar e-mail'}
+          </button>
           <button
             onClick={() => { setCadastroSuccess(false); setTab('login') }}
             style={{ fontSize: 14, fontWeight: 500, color: BLUE, background: 'none', border: 'none', cursor: 'pointer' }}
