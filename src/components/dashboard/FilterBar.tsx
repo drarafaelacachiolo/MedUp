@@ -1,35 +1,43 @@
-import type { StatusAtendimento } from '@/types/database'
+import type { TipoAtendimento } from '@/types/database'
 
-type FilterStatus = 'Todos' | StatusAtendimento
+export type FilterStatus = 'Todos' | 'Pendente' | 'Atrasado' | 'Recebido'
+export type FilterTipo = 'Todos' | TipoAtendimento
 
 interface FilterBarProps {
+  tipo: FilterTipo
   status: FilterStatus
   month: string
   search: string
   banco: string
+  tipoOptions: string[]
+  statusOptions: string[]
+  monthOptions: string[]
   bancoOptions: string[]
+  onTipoChange: (t: FilterTipo) => void
   onStatusChange: (s: FilterStatus) => void
   onMonthChange: (m: string) => void
   onSearchChange: (s: string) => void
   onBancoChange: (b: string) => void
 }
 
-const STATUS_OPTIONS: { key: FilterStatus; label: string }[] = [
-  { key: 'Todos',    label: 'Todos' },
-  { key: 'Pendente', label: 'Pendente' },
-  { key: 'Recebido', label: 'Recebido' },
-]
+function formatMonth(ym: string): string {
+  const [y, m] = ym.split('-').map(Number)
+  const label = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' })
+    .format(new Date(y, m - 1, 1))
+  return label.charAt(0).toUpperCase() + label.slice(1)
+}
+
+const SELECT_STYLE = {
+  minHeight: '40px',
+  fontFamily: 'Inter, sans-serif',
+  paddingRight: '32px',
+  fontSize: '14px',
+}
 
 export default function FilterBar({
-  status,
-  month,
-  search,
-  banco,
-  bancoOptions,
-  onStatusChange,
-  onMonthChange,
-  onSearchChange,
-  onBancoChange,
+  tipo, status, month, search, banco,
+  tipoOptions, statusOptions, monthOptions, bancoOptions,
+  onTipoChange, onStatusChange, onMonthChange, onSearchChange, onBancoChange,
 }: FilterBarProps) {
   return (
     <div className="flex flex-col gap-3 mb-4">
@@ -62,43 +70,40 @@ export default function FilterBar({
         )}
       </div>
 
-      {/* Filtros de status, mês e banco */}
+      {/* Filtros em dropdowns */}
       <div className="flex flex-wrap items-center gap-3">
-        <div
-          className="flex rounded-lg overflow-hidden"
-          style={{ border: '1px solid hsl(var(--border))' }}
-        >
-          {STATUS_OPTIONS.map((opt) => {
-            const isActive = status === opt.key
-            return (
-              <button
-                key={opt.key}
-                onClick={() => onStatusChange(opt.key)}
-                className="px-3 py-2 text-sm font-medium transition-colors"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  backgroundColor: isActive ? '#1C4E80' : 'transparent',
-                  color: isActive ? '#FFFFFF' : '#7A756E',
-                }}
-              >
-                {opt.label}
-              </button>
-            )
-          })}
-        </div>
+        {tipoOptions.length > 0 && (
+          <select
+            className="field py-2 text-sm w-auto"
+            style={SELECT_STYLE}
+            value={tipo}
+            onChange={(e) => onTipoChange(e.target.value as FilterTipo)}
+          >
+            <option value="Todos">Todos os tipos</option>
+            {tipoOptions.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+        )}
 
-        <input
-          type="month"
-          className="field py-2 text-sm w-auto"
-          style={{ minHeight: '40px', fontFamily: 'Inter, sans-serif' }}
-          value={month}
-          onChange={(e) => onMonthChange(e.target.value)}
-        />
+        {statusOptions.length > 0 && (
+          <select
+            className="field py-2 text-sm w-auto"
+            style={SELECT_STYLE}
+            value={status}
+            onChange={(e) => onStatusChange(e.target.value as FilterStatus)}
+          >
+            <option value="Todos">Todos os status</option>
+            {statusOptions.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        )}
 
         {bancoOptions.length > 0 && (
           <select
             className="field py-2 text-sm w-auto"
-            style={{ minHeight: '40px', fontFamily: 'Inter, sans-serif', paddingRight: '32px' }}
+            style={SELECT_STYLE}
             value={banco}
             onChange={(e) => onBancoChange(e.target.value)}
           >
@@ -108,6 +113,18 @@ export default function FilterBar({
             ))}
           </select>
         )}
+
+        <select
+          className="field py-2 text-sm w-auto"
+          style={SELECT_STYLE}
+          value={month}
+          onChange={(e) => onMonthChange(e.target.value)}
+        >
+          <option value="">Todos os meses</option>
+          {monthOptions.map((m) => (
+            <option key={m} value={m}>{formatMonth(m)}</option>
+          ))}
+        </select>
       </div>
     </div>
   )

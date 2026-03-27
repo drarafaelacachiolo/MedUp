@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import FilterBar from './FilterBar'
+import type { FilterStatus, FilterTipo } from './FilterBar'
 import AtendimentosTable from './AtendimentosTable'
 import EditModal from './EditModal'
 import DeleteModal from './DeleteModal'
@@ -15,20 +16,11 @@ import type {
   ConfirmReceiptInput,
   EditAtendimentoInput,
 } from '@/types/database'
-import { currentMonthValue, formatCurrency, formatDate } from '@/lib/utils'
-
-type FilterStatus = 'Todos' | StatusAtendimento
-type FilterTipo = 'Todos' | TipoAtendimento
+import { currentMonthValue, formatCurrency, formatDate, daysOverdue } from '@/lib/utils'
 
 interface DashboardClientProps {
   atendimentos: AtendimentoWithStatus[]
 }
-
-const TIPO_TABS: { key: FilterTipo; label: string }[] = [
-  { key: 'Todos',    label: 'Todos' },
-  { key: 'Plantão',  label: 'Plantões' },
-  { key: 'Consulta', label: 'Consultas' },
-]
 
 export default function DashboardClient({ atendimentos: initialAtendimentos }: DashboardClientProps) {
   const router = useRouter()
@@ -39,21 +31,54 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
   const [searchQuery, setSearchQuery] = useState('')
   const [bancoFilter, setBancoFilter] = useState('')
 
-  const bancoOptions = useMemo(() => {
-    const banks = atendimentos
-      .map(a => a.banco)
-      .filter((b): b is string => !!b && b.trim() !== '')
-    return [...new Set(banks)].sort()
-  }, [atendimentos])
   const [editingItem, setEditingItem] = useState<AtendimentoWithStatus | null>(null)
   const [confirmingItem, setConfirmingItem] = useState<AtendimentoWithStatus | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [actionError, setActionError] = useState('')
 
+  // Opções dinâmicas derivadas dos dados
+  const tipoOptions = useMemo(() => {
+    return [...new Set(atendimentos.map((a) => a.tipo))].sort() as TipoAtendimento[]
+  }, [atendimentos])
+
+  const statusOptions = useMemo(() => {
+    const opts = new Set<string>()
+    for (const a of atendimentos) {
+      if (a.status === 'Recebido') opts.add('Recebido')
+      else if (daysOverdue(a.data_prevista_pagamento, a.status) > 0) opts.add('Atrasado')
+      else opts.add('Pendente')
+    }
+    return (['Pendente', 'Atrasado', 'Recebido'] as const).filter((o) => opts.has(o))
+  }, [atendimentos])
+
+  const bancoOptions = useMemo(() => {
+    const banks = atendimentos
+      .map((a) => a.banco)
+      .filter((b): b is string => !!b && b.trim() !== '')
+    return [...new Set(banks)].sort()
+  }, [atendimentos])
+
+  const monthOptions = useMemo(() => {
+    const months = atendimentos
+      .map((a) => a.data_atendimento.slice(0, 7))
+      .filter(Boolean)
+    return [...new Set(months)].sort().reverse()
+  }, [atendimentos])
+
   const filtered = atendimentos.filter((a) => {
-    if (statusFilter !== 'Todos' && a.status !== statusFilter) return false
     if (tipoFilter !== 'Todos' && a.tipo !== tipoFilter) return false
+
+    if (statusFilter !== 'Todos') {
+      if (statusFilter === 'Recebido') {
+        if (a.status !== 'Recebido') return false
+      } else if (statusFilter === 'Atrasado') {
+        if (a.status === 'Recebido' || daysOverdue(a.data_prevista_pagamento, a.status) <= 0) return false
+      } else if (statusFilter === 'Pendente') {
+        if (a.status === 'Recebido' || daysOverdue(a.data_prevista_pagamento, a.status) > 0) return false
+      }
+    }
+
     if (monthFilter) {
       const mes = a.data_atendimento.slice(0, 7)
       if (mes !== monthFilter) return false
@@ -156,30 +181,8 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
 
   return (
     <div>
-      {/* Barra superior: abas de tipo + botão Novo Registro */}
-      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-        <div
-          className="flex rounded-lg overflow-hidden"
-          style={{ border: '1px solid hsl(var(--border))' }}
-        >
-          {TIPO_TABS.map((tab) => {
-            const isActive = tipoFilter === tab.key
-            return (
-              <button
-                key={tab.key}
-                onClick={() => setTipoFilter(tab.key)}
-                className="px-4 py-2 text-sm font-medium transition-colors"
-                style={{
-                  backgroundColor: isActive ? 'hsl(var(--primary))' : 'transparent',
-                  color: isActive ? 'hsl(var(--primary-foreground))' : 'hsl(var(--foreground) / 0.65)',
-                }}
-              >
-                {tab.label}
-              </button>
-            )
-          })}
-        </div>
-
+      {/* Botão Novo Registro */}
+      <div className="flex justify-end mb-4">
         <button
           onClick={() => router.push('/?tab=novo')}
           className="btn-primary"
@@ -193,11 +196,16 @@ export default function DashboardClient({ atendimentos: initialAtendimentos }: D
       </div>
 
       <FilterBar
+        tipo={tipoFilter}
         status={statusFilter}
         month={monthFilter}
         search={searchQuery}
         banco={bancoFilter}
+        tipoOptions={tipoOptions}
+        statusOptions={statusOptions}
+        monthOptions={monthOptions}
         bancoOptions={bancoOptions}
+        onTipoChange={setTipoFilter}
         onStatusChange={setStatusFilter}
         onMonthChange={setMonthFilter}
         onSearchChange={setSearchQuery}

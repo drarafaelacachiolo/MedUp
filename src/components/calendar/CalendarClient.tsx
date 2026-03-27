@@ -14,8 +14,6 @@ import type {
   StatusAtendimento,
 } from '@/types/database'
 
-type FilterMode = 'todos' | 'pendentes' | 'atrasados' | 'recebidos'
-
 const WEEK_DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
 
 function getCalendarDays(yearMonth: string): (string | null)[] {
@@ -81,7 +79,9 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
 
   const [atendimentos, setAtendimentos] = useState<AtendimentoWithStatus[]>(initial)
   const [currentMonth, setCurrentMonth] = useState(currentYM)
-  const [filterMode, setFilterMode] = useState<FilterMode>('todos')
+  const [calStatusFilter, setCalStatusFilter] = useState('')
+  const [calTipoFilter, setCalTipoFilter] = useState('')
+  const [calBancoFilter, setCalBancoFilter] = useState('')
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [calSearch, setCalSearch] = useState('')
   const [editingItem, setEditingItem] = useState<AtendimentoWithStatus | null>(null)
@@ -92,16 +92,34 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
 
   const calendarDays = useMemo(() => getCalendarDays(currentMonth), [currentMonth])
 
+  // Opções dinâmicas derivadas dos dados
+  const calTipoOptions = useMemo(() => {
+    return [...new Set(atendimentos.map((a) => a.tipo))].sort()
+  }, [atendimentos])
+
+  const calBancoOptions = useMemo(() => {
+    const banks = atendimentos.map((a) => a.banco).filter((b): b is string => !!b && b.trim() !== '')
+    return [...new Set(banks)].sort()
+  }, [atendimentos])
+
+  const calStatusOptions = useMemo(() => {
+    const opts = new Set<string>()
+    for (const a of atendimentos) {
+      const s = getItemStatus(a)
+      opts.add(s === 'recebido' ? 'Recebido' : s === 'atrasado' ? 'Atrasado' : 'Pendente')
+    }
+    return (['Pendente', 'Atrasado', 'Recebido'] as const).filter((o) => opts.has(o))
+  }, [atendimentos])
+
   const filteredAtendimentos = useMemo(() => {
     return atendimentos.filter(item => {
-      // Status filter
-      if (filterMode !== 'todos') {
+      if (calTipoFilter && item.tipo !== calTipoFilter) return false
+      if (calBancoFilter && item.banco !== calBancoFilter) return false
+      if (calStatusFilter) {
         const s = getItemStatus(item)
-        if (filterMode === 'recebidos' && s !== 'recebido') return false
-        if (filterMode === 'atrasados' && s !== 'atrasado') return false
-        if (filterMode === 'pendentes' && s !== 'pendente') return false
+        const mapped = s === 'recebido' ? 'Recebido' : s === 'atrasado' ? 'Atrasado' : 'Pendente'
+        if (mapped !== calStatusFilter) return false
       }
-      // Search filter
       if (calSearch.trim()) {
         const q = calSearch.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
         const norm = (s?: string | null) =>
@@ -111,7 +129,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
       }
       return true
     })
-  }, [atendimentos, filterMode, calSearch])
+  }, [atendimentos, calTipoFilter, calBancoFilter, calStatusFilter, calSearch])
 
   // Plotado na data financeira relevante — sem duplicatas
   // Recebido → data_recebimento | Pendente/Atrasado → data_prevista_pagamento
@@ -199,18 +217,11 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
     setDeletingId(null)
   }
 
-  const FILTERS: { key: FilterMode; label: string }[] = [
-    { key: 'todos',      label: 'Todos' },
-    { key: 'pendentes',  label: 'Pendentes' },
-    { key: 'atrasados',  label: 'Atrasados' },
-    { key: 'recebidos',  label: 'Recebidos' },
-  ]
-
   return (
     <div style={{ maxWidth: '860px', margin: '0 auto', padding: '20px 20px 32px' }}>
 
       {/* Campo de busca */}
-      <div className="relative mb-3">
+      <div className="relative mb-2">
         <svg
           width="14" height="14" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
@@ -241,6 +252,63 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
           </button>
         )}
       </div>
+
+      {/* Filtros dinâmicos */}
+      {(calTipoOptions.length > 0 || calStatusOptions.length > 0 || calBancoOptions.length > 0) && (
+        <div className="flex flex-wrap gap-2 mb-3">
+          {calTipoOptions.length > 0 && (
+            <select
+              value={calTipoFilter}
+              onChange={e => { setCalTipoFilter(e.target.value); setSelectedDay(null) }}
+              style={{
+                height: '34px', fontSize: '12px', fontFamily: 'Inter, sans-serif',
+                borderRadius: '8px', border: '1px solid #E5E1DB', backgroundColor: '#FFFFFF',
+                color: '#1A1816', paddingLeft: '10px', paddingRight: '28px', outline: 'none',
+                appearance: 'auto',
+              }}
+            >
+              <option value="">Todos os tipos</option>
+              {calTipoOptions.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          )}
+          {calStatusOptions.length > 0 && (
+            <select
+              value={calStatusFilter}
+              onChange={e => { setCalStatusFilter(e.target.value); setSelectedDay(null) }}
+              style={{
+                height: '34px', fontSize: '12px', fontFamily: 'Inter, sans-serif',
+                borderRadius: '8px', border: '1px solid #E5E1DB', backgroundColor: '#FFFFFF',
+                color: '#1A1816', paddingLeft: '10px', paddingRight: '28px', outline: 'none',
+                appearance: 'auto',
+              }}
+            >
+              <option value="">Todos os status</option>
+              {calStatusOptions.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          )}
+          {calBancoOptions.length > 0 && (
+            <select
+              value={calBancoFilter}
+              onChange={e => { setCalBancoFilter(e.target.value); setSelectedDay(null) }}
+              style={{
+                height: '34px', fontSize: '12px', fontFamily: 'Inter, sans-serif',
+                borderRadius: '8px', border: '1px solid #E5E1DB', backgroundColor: '#FFFFFF',
+                color: '#1A1816', paddingLeft: '10px', paddingRight: '28px', outline: 'none',
+                appearance: 'auto',
+              }}
+            >
+              <option value="">Todos os bancos</option>
+              {calBancoOptions.map((b) => (
+                <option key={b} value={b}>{b}</option>
+              ))}
+            </select>
+          )}
+        </div>
+      )}
 
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -286,27 +354,6 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
           )}
         </div>
 
-        {/* Filtros de status */}
-        <div className="flex rounded-lg overflow-hidden self-start sm:self-auto" style={{ border: '1px solid #E5E1DB' }}>
-          {FILTERS.map(({ key, label }) => {
-            const active = filterMode === key
-            return (
-              <button
-                key={key}
-                onClick={() => { setFilterMode(key); setSelectedDay(null) }}
-                className="px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap"
-                style={{
-                  fontFamily: 'Inter, sans-serif',
-                  backgroundColor: active ? '#1C4E80' : 'transparent',
-                  color: active ? '#FFFFFF' : '#7A756E',
-                  borderRight: key !== 'recebidos' ? '1px solid #E5E1DB' : 'none',
-                }}
-              >
-                {label}
-              </button>
-            )
-          })}
-        </div>
       </div>
 
       {/* Resumo mensal */}
@@ -531,13 +578,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                   <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
                 <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#A8A09A' }}>
-                  {filterMode === 'recebidos'
-                    ? 'Nenhum recebimento neste dia'
-                    : filterMode === 'atrasados'
-                    ? 'Nenhum atrasado neste dia'
-                    : filterMode === 'pendentes'
-                    ? 'Nenhum pendente neste dia'
-                    : 'Nenhum atendimento neste dia'}
+                  Nenhum registro neste dia
                 </p>
               </div>
             ) : (

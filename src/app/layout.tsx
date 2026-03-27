@@ -4,6 +4,9 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'MedUp',
   description: 'Controle financeiro médico',
+  icons: {
+    icon: '/favicon.png',
+  },
   verification: {
     google: 'UqZ4mfXVFIcSzuO2eBGYg6hz0VJ1hh5fn4ffB2GnaNI',
   },
