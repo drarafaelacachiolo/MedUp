@@ -4,10 +4,12 @@ import type { AtendimentoWithStatus } from '@/types/database'
 
 export default async function CalendarView() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
   const { data, error } = await supabase
     .from('atendimentos_view')
     .select('*')
+    .eq('user_id', user?.id)
     .order('data_atendimento', { ascending: true })
 
   if (error) {

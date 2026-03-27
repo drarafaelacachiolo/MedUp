@@ -159,7 +159,7 @@ function NavigationInner({ userName }: NavigationProps) {
 
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around"
-        style={{ height: '72px', backgroundColor: '#FFFFFF', borderTop: '1px solid #E5E1DB', paddingBottom: '4px' }}
+        style={{ height: 'calc(72px + env(safe-area-inset-bottom, 0px))', backgroundColor: '#FFFFFF', borderTop: '1px solid #E5E1DB', paddingBottom: 'env(safe-area-inset-bottom, 4px)' }}
       >
         {BOTTOM_NAV.map(({ key, label }) => {
           const isActive = activeTab === key

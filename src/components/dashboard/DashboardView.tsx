@@ -6,10 +6,12 @@ import { currentMonthValue, daysOverdue } from '@/lib/utils'
 
 export default async function DashboardView() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
   const { data, error } = await supabase
     .from('atendimentos_view')
     .select('*')
+    .eq('user_id', user?.id)
     .order('data_atendimento', { ascending: false })
 
   if (error) {

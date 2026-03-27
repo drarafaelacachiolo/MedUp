@@ -48,7 +48,8 @@ SELECT
     WHEN data_prevista_pagamento < CURRENT_DATE THEN 'Atrasado'::TEXT
     ELSE 'Pendente'::TEXT
   END AS status
-FROM public.atendimentos;
+FROM public.atendimentos
+WHERE user_id = auth.uid();
 
 -- 4. Row Level Security — cada usuário vê apenas os seus próprios dados
 ALTER TABLE public.atendimentos ENABLE ROW LEVEL SECURITY;
@@ -149,7 +150,8 @@ SELECT
     WHEN data_prevista_pagamento < CURRENT_DATE THEN 'Atrasado'::TEXT
     ELSE 'Pendente'::TEXT
   END AS status
-FROM public.atendimentos;
+FROM public.atendimentos
+WHERE user_id = auth.uid();
 
 -- Reaplicar permissões da view
 REVOKE SELECT ON public.atendimentos_view FROM anon, public;

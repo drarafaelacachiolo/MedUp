@@ -4,16 +4,19 @@ import type { AtendimentoWithStatus } from '@/types/database'
 
 export default async function ChecklistView() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
   const [pendentesRes, recebidosRes] = await Promise.all([
     supabase
       .from('atendimentos_view')
       .select('*')
+      .eq('user_id', user?.id)
       .eq('status', 'Pendente')
       .order('data_prevista_pagamento', { ascending: true }),
     supabase
       .from('atendimentos_view')
       .select('*')
+      .eq('user_id', user?.id)
       .eq('status', 'Recebido')
       .order('data_recebimento', { ascending: false }),
   ])

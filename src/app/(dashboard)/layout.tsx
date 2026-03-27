@@ -55,7 +55,7 @@ export default async function DashboardLayout({
         {/* Conteúdo */}
         <main
           className="flex-1 overflow-y-auto"
-          style={{ paddingBottom: '72px' }}
+          style={{ paddingBottom: 'calc(72px + env(safe-area-inset-bottom, 0px))' }}
         >
           <style>{`@media (min-width: 768px) { main { padding-bottom: 0 !important; } }`}</style>
           {children}
