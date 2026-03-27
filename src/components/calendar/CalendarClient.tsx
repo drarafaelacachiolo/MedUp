@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import EditModal from '@/components/dashboard/EditModal'
+import DeleteModal from '@/components/dashboard/DeleteModal'
 import ConfirmModal from '@/components/checklist/ConfirmModal'
 import { formatCurrency, formatDate, daysOverdue, todayString } from '@/lib/utils'
 import type {
@@ -84,6 +85,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
   const [editingItem, setEditingItem] = useState<AtendimentoWithStatus | null>(null)
   const [confirmingItem, setConfirmingItem] = useState<AtendimentoWithStatus | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [actionError, setActionError] = useState('')
 
@@ -173,14 +175,17 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
     setIsLoading(false)
   }
 
-  async function handleDelete(id: string) {
-    if (!window.confirm('Excluir este registro? Esta ação não pode ser desfeita.')) return
+  async function handleDelete() {
+    if (!deletingId) return
     setActionError('')
+    setIsLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.from('atendimentos').delete().eq('id', id)
-    if (error) { setActionError('Erro ao excluir. Tente novamente.'); return }
-    setAtendimentos((prev) => prev.filter((a) => a.id !== id))
+    const { error } = await supabase.from('atendimentos').delete().eq('id', deletingId)
+    setIsLoading(false)
+    if (error) { setActionError('Erro ao excluir. Tente novamente.'); setDeletingId(null); return }
+    setAtendimentos((prev) => prev.filter((a) => a.id !== deletingId))
     if (selectedDay && eventsByDate.get(selectedDay)?.length === 1) setSelectedDay(null)
+    setDeletingId(null)
   }
 
   const FILTERS: { key: FilterMode; label: string }[] = [
@@ -554,7 +559,7 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
                           Editar
                         </button>
                         <button
-                          onClick={() => handleDelete(ev.id)}
+                          onClick={() => setDeletingId(ev.id)}
                           className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
                           style={{ fontFamily: 'Inter, sans-serif', backgroundColor: '#F8E5EB', color: '#9B1D3E', fontSize: '11px' }}
                         >
@@ -587,6 +592,14 @@ export default function CalendarClient({ atendimentos: initial }: Props) {
           item={confirmingItem}
           onConfirm={handleConfirm}
           onClose={() => setConfirmingItem(null)}
+          isLoading={isLoading}
+        />
+      )}
+
+      {deletingId && (
+        <DeleteModal
+          onConfirm={handleDelete}
+          onClose={() => setDeletingId(null)}
           isLoading={isLoading}
         />
       )}
