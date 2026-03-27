@@ -35,17 +35,11 @@ export async function GET(request: Request) {
     if (!error && authData?.user) {
       const user = authData.user
 
-      // Detecta login via Google sem senha definida ainda
-      const isGoogleOnly =
-        user.identities?.some((id) => id.provider === 'google') &&
-        user.identities?.every((id) => id.provider !== 'email')
-
-      // must_change_password === false significa que já passou pelo fluxo antes
+      // Qualquer usuário OAuth sem senha definida explicitamente vai para /definir-senha.
+      // must_change_password === false significa que já passou pelo fluxo antes.
       const hasDefinedPassword = user.user_metadata?.must_change_password === false
 
-      if (isGoogleOnly && !hasDefinedPassword) {
-        // Primeiro login pelo Google: marca flag e manda para definir senha
-        await supabase.auth.updateUser({ data: { must_change_password: true } })
+      if (!hasDefinedPassword) {
         return NextResponse.redirect(`${origin}/definir-senha`)
       }
 

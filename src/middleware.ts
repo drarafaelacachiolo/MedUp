@@ -14,7 +14,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    const mustChangePassword = user.user_metadata?.must_change_password === true
+    // must_change_password === false → senha já definida
+    // true ou undefined → ainda precisa definir (admin-criado ou primeiro login Google)
+    const mustChangePassword = user.user_metadata?.must_change_password !== false
 
     if (pathname === '/login') {
       const url = request.nextUrl.clone()
