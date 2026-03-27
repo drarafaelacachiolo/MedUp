@@ -35,11 +35,15 @@ export async function GET(request: Request) {
     if (!error && authData?.user) {
       const user = authData.user
 
-      // Qualquer usuário OAuth sem senha definida explicitamente vai para /definir-senha.
-      // must_change_password === false significa que já passou pelo fluxo antes.
-      const hasDefinedPassword = user.user_metadata?.must_change_password === false
+      // Usuário veio pelo Google. Se nunca definiu senha própria, manda para /definir-senha.
+      // A flag 'google_first_login' é usada para distinguir do fluxo admin (=== true).
+      // false → já passou pelo fluxo antes, deixa entrar normalmente.
+      const alreadySetPassword = user.user_metadata?.must_change_password === false
+      const isAdminFlow = user.user_metadata?.must_change_password === true
 
-      if (!hasDefinedPassword) {
+      if (!alreadySetPassword && !isAdminFlow) {
+        // Primeiro login Google: seta flag e manda definir senha
+        await supabase.auth.updateUser({ data: { must_change_password: 'google_first_login' } })
         return NextResponse.redirect(`${origin}/definir-senha`)
       }
 

@@ -14,9 +14,12 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user) {
-    // must_change_password === false → senha já definida
-    // true ou undefined → ainda precisa definir (admin-criado ou primeiro login Google)
-    const mustChangePassword = user.user_metadata?.must_change_password !== false
+    // true → admin criou o usuário e marcou para trocar senha
+    // 'google_first_login' → primeiro login via Google (setado no /auth/callback)
+    // false ou undefined → não precisa trocar
+    const mustChangePassword =
+      user.user_metadata?.must_change_password === true ||
+      user.user_metadata?.must_change_password === 'google_first_login'
 
     if (pathname === '/login') {
       const url = request.nextUrl.clone()
