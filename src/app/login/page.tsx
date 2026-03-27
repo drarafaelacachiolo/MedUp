@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Spinner from '@/components/ui/Spinner'
 
-type Tab = 'login' | 'cadastro'
-
 const NAVY = '#0D1B3E'
 const BLUE = '#1C4E80'
 
@@ -22,7 +20,6 @@ function MedUpLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
     />
   )
 }
-
 
 function GoogleIcon() {
   return (
@@ -60,42 +57,23 @@ function Footer({ dark }: { dark?: boolean }) {
 
 export default function LoginPage() {
   const router = useRouter()
-  const [tab, setTab] = useState<Tab>('login')
 
-  // Login
-  const [loginEmail, setLoginEmail] = useState('')
-  const [loginPassword, setLoginPassword] = useState('')
-  const [loginError, setLoginError] = useState('')
-  const [loginLoading, setLoginLoading] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-
-  const [showLoginPassword, setShowLoginPassword] = useState(false)
-  const [showCadastroPassword, setShowCadastroPassword] = useState(false)
-  const [showCadastroConfirm, setShowCadastroConfirm] = useState(false)
-
-  // Cadastro
-  const [cadastroNome, setCadastroNome] = useState('')
-  const [cadastroEmail, setCadastroEmail] = useState('')
-  const [cadastroPassword, setCadastroPassword] = useState('')
-  const [cadastroConfirm, setCadastroConfirm] = useState('')
-  const [cadastroError, setCadastroError] = useState('')
-  const [cadastroSuccess, setCadastroSuccess] = useState(false)
-  const [cadastroLoading, setCadastroLoading] = useState(false)
-  const [resendLoading, setResendLoading] = useState(false)
-  const [resendSuccess, setResendSuccess] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
-    setLoginError('')
-    setLoginLoading(true)
+    setError('')
+    setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
-      email: loginEmail,
-      password: loginPassword,
-    })
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
-      setLoginError('Email ou senha incorretos.')
-      setLoginLoading(false)
+      setError('Email ou senha incorretos.')
+      setLoading(false)
       return
     }
     router.refresh()
@@ -103,8 +81,7 @@ export default function LoginPage() {
   }
 
   async function handleGoogleLogin() {
-    setLoginError('')
-    setCadastroError('')
+    setError('')
     setGoogleLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOAuth({
@@ -112,54 +89,9 @@ export default function LoginPage() {
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
     if (error) {
-      setLoginError('Erro ao conectar com Google.')
-      setCadastroError('Erro ao conectar com Google.')
+      setError('Erro ao conectar com Google.')
       setGoogleLoading(false)
     }
-  }
-
-  async function handleResendEmail() {
-    setResendLoading(true)
-    const supabase = createClient()
-    await supabase.auth.resend({ type: 'signup', email: cadastroEmail })
-    setResendLoading(false)
-    setResendSuccess(true)
-  }
-
-  async function handleCadastro(e: React.FormEvent) {
-    e.preventDefault()
-    setCadastroError('')
-    if (cadastroPassword !== cadastroConfirm) {
-      setCadastroError('As senhas não coincidem.')
-      setCadastroLoading(false)
-      return
-    }
-    setCadastroLoading(true)
-    const supabase = createClient()
-    const { data, error } = await supabase.auth.signUp({
-      email: cadastroEmail,
-      password: cadastroPassword,
-      options: {
-        data: { full_name: cadastroNome },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
-    if (error) {
-      setCadastroError(
-        error.message === 'User already registered'
-          ? 'Este email já está cadastrado.'
-          : 'Erro ao criar conta. Tente novamente.'
-      )
-      setCadastroLoading(false)
-      return
-    }
-    if (data.session) {
-      router.refresh()
-      router.push('/')
-      return
-    }
-    setCadastroSuccess(true)
-    setCadastroLoading(false)
   }
 
   const inputStyle: React.CSSProperties = {
@@ -183,236 +115,6 @@ export default function LoginPage() {
     marginBottom: 6,
   }
 
-  const btnPrimary: React.CSSProperties = {
-    width: '100%',
-    backgroundColor: BLUE,
-    color: '#FFFFFF',
-    border: 'none',
-    borderRadius: 8,
-    padding: '13px 20px',
-    fontSize: 15,
-    fontWeight: 600,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    minHeight: 48,
-  }
-
-  const btnGoogle: React.CSSProperties = {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    color: NAVY,
-    border: '1px solid #E5E1DB',
-    borderRadius: 8,
-    padding: '11px 20px',
-    fontSize: 15,
-    fontWeight: 500,
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    minHeight: 44,
-  }
-
-  const errorBox = (msg: string) => (
-    <p style={{
-      fontSize: 13,
-      color: '#b91c1c',
-      backgroundColor: '#fee2e2',
-      borderRadius: 6,
-      padding: '8px 12px',
-    }}>
-      {msg}
-    </p>
-  )
-
-  const dividerStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    margin: '4px 0',
-  }
-
-  function LoginForm() {
-    return (
-      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div>
-          <label style={labelStyle}>Email</label>
-          <input
-            type="email"
-            autoComplete="email"
-            required
-            placeholder="seu@email.com"
-            value={loginEmail}
-            onChange={(e) => setLoginEmail(e.target.value)}
-            style={inputStyle}
-          />
-        </div>
-        <div>
-          <label style={labelStyle}>Senha</label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type={showLoginPassword ? 'text' : 'password'}
-              autoComplete="current-password"
-              required
-              placeholder="••••••••"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              style={{ ...inputStyle, paddingRight: 44 }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowLoginPassword(v => !v)}
-              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 0, display: 'flex' }}
-            >
-              {showLoginPassword
-                ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              }
-            </button>
-          </div>
-        </div>
-        {loginError && errorBox(loginError)}
-        <button type="submit" disabled={loginLoading} style={{ ...btnPrimary, opacity: loginLoading ? 0.6 : 1 }}>
-          {loginLoading ? <><Spinner /> Entrando...</> : 'Entrar'}
-        </button>
-        <div style={dividerStyle}>
-          <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
-          <span style={{ fontSize: 12, color: '#9CA3AF', whiteSpace: 'nowrap' }}>ou continue com</span>
-          <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
-        </div>
-        <button type="button" onClick={handleGoogleLogin} disabled={googleLoading} style={{ ...btnGoogle, opacity: googleLoading ? 0.6 : 1 }}>
-          {googleLoading ? <Spinner /> : <GoogleIcon />}
-          Google
-        </button>
-      </form>
-    )
-  }
-
-  function CadastroForm() {
-    if (cadastroSuccess) {
-      return (
-        <div style={{ textAlign: 'center', padding: '16px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 48, height: 48, borderRadius: '50%', backgroundColor: '#E6F4ED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3D5E3F" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <p style={{ fontWeight: 500, color: NAVY, fontSize: 15 }}>Conta criada com sucesso!</p>
-          <p style={{ fontSize: 13, color: '#6B7280', lineHeight: '1.5' }}>
-            Enviamos um e-mail de confirmação para <strong>{cadastroEmail}</strong>. Acesse sua caixa de entrada e clique no link para ativar sua conta.
-          </p>
-          <button
-            onClick={handleResendEmail}
-            disabled={resendLoading || resendSuccess}
-            style={{ fontSize: 13, color: resendSuccess ? '#3D5E3F' : '#6B7280', background: 'none', border: 'none', cursor: resendSuccess ? 'default' : 'pointer', opacity: resendLoading ? 0.6 : 1 }}
-          >
-            {resendLoading ? 'Reenviando...' : resendSuccess ? 'E-mail reenviado!' : 'Não recebeu? Reenviar e-mail'}
-          </button>
-          <button
-            onClick={() => { setCadastroSuccess(false); setTab('login') }}
-            style={{ fontSize: 14, fontWeight: 500, color: BLUE, background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            Ir para o login →
-          </button>
-        </div>
-      )
-    }
-    return (
-      <form onSubmit={handleCadastro} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div>
-          <label style={labelStyle}>Nome completo</label>
-          <input
-            type="text"
-            autoComplete="name"
-            required
-            placeholder="Dra. Ana Silva"
-            value={cadastroNome}
-            onChange={(e) => setCadastroNome(e.target.value)}
-            style={inputStyle}
-          />
-        </div>
-        <div>
-          <label style={labelStyle}>Email</label>
-          <input
-            type="email"
-            autoComplete="email"
-            required
-            placeholder="seu@email.com"
-            value={cadastroEmail}
-            onChange={(e) => setCadastroEmail(e.target.value)}
-            style={inputStyle}
-          />
-        </div>
-        <div>
-          <label style={labelStyle}>Senha</label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type={showCadastroPassword ? 'text' : 'password'}
-              autoComplete="new-password"
-              required
-              minLength={6}
-              placeholder="Mínimo 6 caracteres"
-              value={cadastroPassword}
-              onChange={(e) => setCadastroPassword(e.target.value)}
-              style={{ ...inputStyle, paddingRight: 44 }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowCadastroPassword(v => !v)}
-              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 0, display: 'flex' }}
-            >
-              {showCadastroPassword
-                ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              }
-            </button>
-          </div>
-        </div>
-        <div>
-          <label style={labelStyle}>Confirmar senha</label>
-          <div style={{ position: 'relative' }}>
-            <input
-              type={showCadastroConfirm ? 'text' : 'password'}
-              autoComplete="new-password"
-              required
-              placeholder="Repita a senha"
-              value={cadastroConfirm}
-              onChange={(e) => setCadastroConfirm(e.target.value)}
-              style={{ ...inputStyle, paddingRight: 44 }}
-            />
-            <button
-              type="button"
-              onClick={() => setShowCadastroConfirm(v => !v)}
-              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 0, display: 'flex' }}
-            >
-              {showCadastroConfirm
-                ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              }
-            </button>
-          </div>
-        </div>
-        {cadastroError && errorBox(cadastroError)}
-        <button type="submit" disabled={cadastroLoading} style={{ ...btnPrimary, opacity: cadastroLoading ? 0.6 : 1 }}>
-          {cadastroLoading ? <><Spinner /> Criando conta...</> : 'Criar conta'}
-        </button>
-        <div style={dividerStyle}>
-          <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
-          <span style={{ fontSize: 12, color: '#9CA3AF', whiteSpace: 'nowrap' }}>ou continue com</span>
-          <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
-        </div>
-        <button type="button" onClick={handleGoogleLogin} disabled={googleLoading} style={{ ...btnGoogle, opacity: googleLoading ? 0.6 : 1 }}>
-          {googleLoading ? <Spinner /> : <GoogleIcon />}
-          Google
-        </button>
-      </form>
-    )
-  }
-
   const card = (
     <div style={{
       backgroundColor: '#FFFFFF',
@@ -422,36 +124,94 @@ export default function LoginPage() {
       overflow: 'hidden',
       boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
     }}>
-      {/* Tabs */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        borderBottom: '1px solid #E5E1DB',
-      }}>
-        {(['login', 'cadastro'] as Tab[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            style={{
-              padding: '14px',
-              fontSize: 14,
-              fontWeight: 500,
-              color: tab === t ? BLUE : '#9CA3AF',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderBottom: tab === t ? `2px solid ${BLUE}` : '2px solid transparent',
-              cursor: 'pointer',
-              marginBottom: -1,
-            }}
-          >
-            {t === 'login' ? 'Entrar' : 'Criar conta'}
-          </button>
-        ))}
+      {/* Header */}
+      <div style={{ padding: '24px 24px 0' }}>
+        <p style={{ fontSize: 20, fontWeight: 700, color: NAVY, margin: 0 }}>Bem-vindo de volta</p>
+        <p style={{ fontSize: 13, color: '#6B7280', marginTop: 4, marginBottom: 0 }}>
+          Acesse sua conta para continuar
+        </p>
       </div>
 
       {/* Form */}
       <div style={{ padding: 24 }}>
-        {tab === 'login' ? LoginForm() : CadastroForm()}
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label style={labelStyle}>Email</label>
+            <input
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={inputStyle}
+            />
+          </div>
+          <div>
+            <label style={labelStyle}>Senha</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ ...inputStyle, paddingRight: 44 }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 0, display: 'flex' }}
+              >
+                {showPassword
+                  ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                  : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          {error && (
+            <p style={{ fontSize: 13, color: '#b91c1c', backgroundColor: '#fee2e2', borderRadius: 6, padding: '8px 12px', margin: 0 }}>
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%', backgroundColor: BLUE, color: '#FFFFFF', border: 'none',
+              borderRadius: 8, padding: '13px 20px', fontSize: 15, fontWeight: 600,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 8, minHeight: 48, opacity: loading ? 0.6 : 1,
+            }}
+          >
+            {loading ? <><Spinner /> Entrando...</> : 'Entrar'}
+          </button>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '4px 0' }}>
+            <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
+            <span style={{ fontSize: 12, color: '#9CA3AF', whiteSpace: 'nowrap' }}>ou continue com</span>
+            <div style={{ flex: 1, height: 1, backgroundColor: '#E5E1DB' }} />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={googleLoading}
+            style={{
+              width: '100%', backgroundColor: '#FFFFFF', color: NAVY, border: '1px solid #E5E1DB',
+              borderRadius: 8, padding: '11px 20px', fontSize: 15, fontWeight: 500,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              gap: 8, minHeight: 44, opacity: googleLoading ? 0.6 : 1,
+            }}
+          >
+            {googleLoading ? <Spinner /> : <GoogleIcon />}
+            Google
+          </button>
+        </form>
       </div>
     </div>
   )
