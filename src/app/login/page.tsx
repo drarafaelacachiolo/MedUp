@@ -70,14 +70,15 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       setError('Email ou senha incorretos.')
       setLoading(false)
       return
     }
+    const mustChangePassword = data.user?.user_metadata?.must_change_password === true
     router.refresh()
-    router.push('/')
+    router.push(mustChangePassword ? '/definir-senha' : '/')
   }
 
   async function handleGoogleLogin() {

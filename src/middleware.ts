@@ -4,7 +4,8 @@ import { updateSession } from '@/lib/supabase/middleware'
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request)
 
-  const isPublicRoute = ['/login', '/privacidade', '/termos', '/auth/callback'].includes(request.nextUrl.pathname)
+  const pathname = request.nextUrl.pathname
+  const isPublicRoute = ['/login', '/privacidade', '/termos', '/auth/callback'].includes(pathname)
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone()
@@ -12,12 +13,28 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  const isLoginPage = request.nextUrl.pathname === '/login'
+  if (user) {
+    const mustChangePassword = user.user_metadata?.must_change_password === true
 
-  if (user && isLoginPage) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/'
-    return NextResponse.redirect(url)
+    if (pathname === '/login') {
+      const url = request.nextUrl.clone()
+      url.pathname = mustChangePassword ? '/definir-senha' : '/'
+      return NextResponse.redirect(url)
+    }
+
+    // Bloqueia acesso ao app enquanto senha não for definida
+    if (mustChangePassword && pathname !== '/definir-senha') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/definir-senha'
+      return NextResponse.redirect(url)
+    }
+
+    // Impede acesso à tela de definir senha após já ter definido
+    if (!mustChangePassword && pathname === '/definir-senha') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
   }
 
   // CRÍTICO: retornar supabaseResponse (não NextResponse.next())
