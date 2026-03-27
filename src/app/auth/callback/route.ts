@@ -5,8 +5,6 @@ import { cookies } from 'next/headers'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  
-  // Rota padrão após login
   const next = searchParams.get('next') ?? '/'
 
   if (code) {
@@ -25,22 +23,35 @@ export async function GET(request: Request) {
                 cookieStore.set(name, value, options)
               )
             } catch {
-              // The `setAll` method was called from a Server Component.
-              // This can be ignored if you have middleware refreshing
-              // user sessions.
+              // Ignorado quando chamado de Server Component
             }
           },
         },
       }
     )
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    
-    if (!error) {
+    const { data: authData, error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!error && authData?.user) {
+      const user = authData.user
+
+      // Detecta login via Google sem senha definida ainda
+      const isGoogleOnly =
+        user.identities?.some((id) => id.provider === 'google') &&
+        user.identities?.every((id) => id.provider !== 'email')
+
+      // must_change_password === false significa que já passou pelo fluxo antes
+      const hasDefinedPassword = user.user_metadata?.must_change_password === false
+
+      if (isGoogleOnly && !hasDefinedPassword) {
+        // Primeiro login pelo Google: marca flag e manda para definir senha
+        await supabase.auth.updateUser({ data: { must_change_password: true } })
+        return NextResponse.redirect(`${origin}/definir-senha`)
+      }
+
       return NextResponse.redirect(`${origin}${next}`)
     }
   }
 
-  // Em caso de erro, redireciona para login com parâmetro de erro
   return NextResponse.redirect(`${origin}/login?error=auth_failed`)
 }
