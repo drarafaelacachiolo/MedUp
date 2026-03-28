@@ -6,6 +6,7 @@ import { todayString } from '@/lib/utils'
 import type { TipoAtendimento, Categoria } from '@/types/database'
 import Spinner from '@/components/ui/Spinner'
 import SmartDateInput from '@/components/ui/SmartDateInput'
+import AutocompleteInput from '@/components/ui/AutocompleteInput'
 
 const emptyForm = {
   data_atendimento: todayString(),
@@ -38,6 +39,9 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
   const [showNovaCategoria, setShowNovaCategoria] = useState(false)
   const [novaCategoria, setNovaCategoria] = useState(emptyNovaCategoria)
   const [savingCategoria, setSavingCategoria] = useState(false)
+
+  const [localOptions, setLocalOptions] = useState<string[]>([])
+  const [pacienteOptions, setPacienteOptions] = useState<string[]>([])
 
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -77,6 +81,23 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
         paciente: savedPaciente,
         banco:    savedBanco,
       }))
+
+      // Busca valores já usados para autocomplete
+      const { data: locaisData } = await supabase
+        .from('atendimentos')
+        .select('local')
+        .not('local', 'is', null)
+        .not('local', 'eq', '')
+      const locaisUnicos = [...new Set((locaisData ?? []).map((r: { local: string }) => r.local).filter(Boolean))].sort()
+      setLocalOptions(locaisUnicos)
+
+      const { data: pacientesData } = await supabase
+        .from('atendimentos')
+        .select('paciente')
+        .not('paciente', 'is', null)
+        .not('paciente', 'eq', '')
+      const pacientesUnicos = [...new Set((pacientesData ?? []).map((r: { paciente: string }) => r.paciente).filter(Boolean))].sort()
+      setPacienteOptions(pacientesUnicos)
     }
     loadDefaults()
   }, [])
@@ -318,24 +339,22 @@ export default function NovoLancamentoForm({ initialDate }: { initialDate?: stri
 
           <div className="md:col-span-2">
             <label className="field-label">Local *</label>
-            <input
-              type="text"
+            <AutocompleteInput
               required
-              className="field"
-              placeholder="Ex: Hospital das Clínicas, Unifesp..."
               value={form.local}
-              onChange={(e) => set('local', e.target.value)}
+              onChange={(v) => set('local', v)}
+              suggestions={localOptions}
+              placeholder="Ex: Hospital das Clínicas, Unifesp..."
             />
           </div>
 
           <div className="md:col-span-2">
             <label className="field-label">Paciente / Identificação</label>
-            <input
-              type="text"
-              className="field"
-              placeholder="Nome do paciente ou identificação extra"
+            <AutocompleteInput
               value={form.paciente}
-              onChange={(e) => set('paciente', e.target.value)}
+              onChange={(v) => set('paciente', v)}
+              suggestions={pacienteOptions}
+              placeholder="Nome do paciente ou identificação extra"
             />
           </div>
         </div>
